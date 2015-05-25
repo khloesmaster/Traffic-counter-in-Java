@@ -148,6 +148,7 @@ public class VideoProcessorTest {
 	{
 		testProcessor.setFinished(false);
 	}
+	
 	@Test
 	public void testGetFrameCount()
 	{
@@ -155,26 +156,31 @@ public class VideoProcessorTest {
 				"/video/Debrecen_Egyetemsgt.mp4").getPath());
 		testProcessor.getFrameCount();
 	}
+	
 	@Test
 	public void testSetCarsPerMinute()
 	{
 		testProcessor.setCarsPerMinute(2);
 	}
+	
 	@Test
 	public void testGetCarsPerMinute()
 	{
 		testProcessor.getCarsPerMinute();
 	}
+	
 	@Test
 	public void testGetPreviousControlPointsHeight()
 	{
 		testProcessor.getPreviousControlPointsHeight();
 	}
+	
 	@Test
 	public void testSetPreviousControlPointsHeight()
 	{
 		testProcessor.setPreviousControlPointsHeight(100);
 	}
+	
 	@Test
 	public void testGetImageArea()
 	{
@@ -198,6 +204,5 @@ public class VideoProcessorTest {
 		testProcessor.setFramePos(2);
 		assertNotEquals(0, testProcessor.getFramePos());
 	}
-	
-	
+
 }
