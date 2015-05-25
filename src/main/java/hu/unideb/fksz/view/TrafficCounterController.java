@@ -133,7 +133,7 @@ public class TrafficCounterController
 	 * @param filename 	the absolute path of the video to be loaded.
 	 * @return 	whether the {@code VideoProcessor} successfully loaded the video or not.
 	 */
-	private int loadVideo(String filename)
+	public int loadVideo(String filename)
 	{
 		if (filename != null)
 		{

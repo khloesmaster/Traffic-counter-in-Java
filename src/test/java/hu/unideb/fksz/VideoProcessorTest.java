@@ -3,7 +3,6 @@ package hu.unideb.fksz;
 import org.junit.Test;
 import org.opencv.core.Core;
 
-import static hu.unideb.fksz.TrafficCounterLogger.logger;
 import static org.junit.Assert.*;
 
 public class VideoProcessorTest {
@@ -18,8 +17,10 @@ public class VideoProcessorTest {
 		assertEquals(
 				0,
 				testProcessor.initVideo(VideoProcessorTest.class.getResource(
-						"/Debrecen_Egyetemsgt.mp4").getPath()));
+						"/video/Debrecen_Egyetemsgt.mp4").getPath()));
 
+		System.out.println(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
 	}
 
 	@Test
@@ -28,8 +29,15 @@ public class VideoProcessorTest {
 	}
 
 	@Test
-	public void getVideoCap() {
+	public void testGetVideoCap() {
 		assertNotNull("Not null!", testProcessor.getVideoCap());
+	}
+
+	@Test
+	public void testIsOpened() {
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+		assertTrue(testProcessor.isOpened());
 	}
 
 	@Test
@@ -42,21 +50,58 @@ public class VideoProcessorTest {
 		assertNotEquals(0, testProcessor.getHeightOfAControlPoint());
 
 	}
+
 	@Test
-	public void testVideoProcessor()
-	{
-		testProcessor.processVideo();
+	public void testVideoProcessor() {
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+
+		while (!testProcessor.isFinished()) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			testProcessor.processVideo();
+		}
 		
-		assertNotEquals(0, testProcessor.getDetectedCarsCount());
+		assertTrue(!testProcessor.getFrame().empty());
 		
+		if (testProcessor.isFinished()) {
+			assertNotEquals(0, testProcessor.getDetectedCarsCount());
+		}
+
 	}
 	@Test
-	public void testGetLengthFormatted()
-	{
+	public void testGetLengthFormatted() {
 		assertNotEquals("", testProcessor.getLengthFormatted());
 	}
 	
+	@Test
+	public void testSetHeightOfTheControlPoints()
+	{
+		testProcessor.setHeightOfTheControlPoints(100);
+	}
+	@Test
+	public void testWriteOnFrame()
+	{
+		testProcessor.writeOnFrame("Grumpy text");
+	}
+	
+	@Test
+	public void testSetFramePos()
+	{
+		testProcessor.setFramePos(-1);
+	}
+	
+	@Test
+	public void testConverCvMatToImage()
+	{
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+		
+		testProcessor.getVideoCap().read(testProcessor.getFrame());
+		assertNotNull(testProcessor.convertCvMatToImage());
+	}
 
-	
-	
 }

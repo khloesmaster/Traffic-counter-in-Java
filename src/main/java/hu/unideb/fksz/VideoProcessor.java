@@ -67,6 +67,8 @@ public class VideoProcessor
 	private Mat thresholdImage = new Mat();
 	private Mat hierarchy = new Mat();
 	private Rect boundingRectangle = new Rect();
+	
+	private String fileName;
 	private List<Point> controlPoints = new ArrayList<Point>();
 	private int controlPointsHeight = 300;
 	private int previousControlPointsHeight;
@@ -106,7 +108,10 @@ public class VideoProcessor
 		initControlPoints();
 	}
 	
-	
+	public boolean isOpened()
+	{
+		return video.isOpened();
+	}
 	/**
 	 * Returns an {@code int} , the {@code detectedCarsCount}.
 	 * 
@@ -540,6 +545,8 @@ public class VideoProcessor
 			if (video.isOpened())
 			{
 				resetCheckPoints();
+				
+				fileName = filename;
 				finished = false;
 				frameCounter = 0;
 				logger.trace("VideoCapture opened successfully!");
@@ -674,6 +681,15 @@ public class VideoProcessor
 		controlPoints.get(6).y = height;
 		controlPoints.get(7).y = height;
 		controlPoints.get(8).y = height;
+	}
+	/**
+	 * Returns the file name of the opened video.
+	 * 
+	 * @return {@code filename}, the file name of the opened video.
+	 */
+	public String getFileName()
+	{
+		return fileName;
 	}
 }
 

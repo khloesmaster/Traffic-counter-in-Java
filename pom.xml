@@ -88,6 +88,13 @@
 					<include>*.mp4</include>
 				</includes>
 			</resource>
+			
+			<resource>
+				<directory>${project.basedir}/src/test/resources/image</directory>
+				<includes>
+					<include>*.jpg</include>
+				</includes>
+			</resource>
 
 			<resource>
 				<directory>${project.basedir}/src/main/resources/config</directory>

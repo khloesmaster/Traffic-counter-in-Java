@@ -50,7 +50,7 @@ public class FileOpener
 	 * Sets the initial directory of the {@code FileChooser}.
 	 * Adds {@link ExtensionFilter}s to the {@code FileChooser}.
 	 */
-	private void configureFileChooser()
+	public void configureFileChooser()
 	{
 		this.file_chooser.setTitle("Select your video");
 		this.file_chooser.setInitialDirectory(new File(System.getProperty("user.home")));

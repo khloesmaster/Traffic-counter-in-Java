@@ -47,7 +47,7 @@ public class FileSaver
 	 * Sets the initial directory of the {@code FileChooser}.
 	 * Adds {@link ExtensionFilter}s to the {@code FileChooser}.
 	 */
-	private void configureFileChooser()
+	public void configureFileChooser()
 	{
 		this.file_chooser.setTitle("Save your image");
 		this.file_chooser.setInitialDirectory(new File(System.getProperty("user.home")));
