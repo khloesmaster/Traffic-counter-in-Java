@@ -26,8 +26,25 @@ package hu.unideb.fksz;
 
 import java.io.File;
 
+/**
+ * Class for parsing the input file names.
+ * 
+ * 
+ * @author krajsz
+ *
+ */
+
+
+
 public class FileNameParser 
 {
+	/**
+	 * Returns a {@code String} which represents a city name if it was
+	 * specified in the file name.
+	 * 
+	 * @param fileName	The {@code String} representing the name of the file.
+	 * @return a {@code String} which represents a city name if it was specified.
+	 */
 	public static String getCity(String fileName) 
 	{
 		String filename = new File(fileName).getName();
@@ -39,7 +56,14 @@ public class FileNameParser
 		}
 		return filename.substring(0, filename.indexOf("_"));
 	}
-
+	
+	/**
+	 * Returns a {@code String} which represents a street name if it was
+	 * specified in the file name.
+	 * 
+	 * @param fileName		The {@code String} representing the name of the file.
+	 * @return a {@code String} which represents a street name if it was specified.
+	 */
 	public static String getStreet(String fileName) 
 	{
 		String filename = new File(fileName).getName();
@@ -52,11 +76,25 @@ public class FileNameParser
 		return filename.substring(filename.indexOf("_")+1, filename.lastIndexOf("."));
 	}
 	
+	/**
+	 * Returns the name of the file denoted by this abstract pathname,
+	 * or null if the {@code fileName} is null
+	 * 
+	 * @param fileName 		The {@code String} representing the name of the file.
+	 * @return The name of the file denoted by this abstract pathname,
+	 * or null if the {@code fileName} is null.
+	 */
 	public static String getFileName(String fileName)
 	{
 		return fileName == null ? null : new File(fileName).getName();
 	}
 	
+	/***
+	 * Returns the extension of the file denoted by this abstract {@code fileName}.
+	 * 
+	 * @param fileName		The {@code String} representing the name of the file.
+	 * @return The extension of the file denoted by this abstract {@code fileName}.
+	 */
 	public static String getExtension(String fileName)
 	{
 		String filename = new File(fileName).getName();

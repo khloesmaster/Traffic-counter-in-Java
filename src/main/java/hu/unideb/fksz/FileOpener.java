@@ -27,13 +27,29 @@ package hu.unideb.fksz;
 import java.io.File;
 
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+
+
+/**
+ * Class for opening files with a specific extension.
+ * 
+ * @author krajsz
+ *
+ */
 
 public class FileOpener 
 {
 	
 	private FileChooser file_chooser = new FileChooser();
 
+	
+	/**
+	 * Configures the {@code FileChooser}.
+	 * Sets the title of the {@code FileChooser}.
+	 * Sets the initial directory of the {@code FileChooser}.
+	 * Adds {@link ExtensionFilter}s to the {@code FileChooser}.
+	 */
 	private void configureFileChooser()
 	{
 		this.file_chooser.setTitle("Select your video");
@@ -46,6 +62,14 @@ public class FileOpener
 					);
 	}
 	
+	/**
+	 * Returns a {@code String} which represents the absolute path of the
+	 * selected file or {@code null} if no file was selected.
+	 * 
+	 * @param stage		the owner window of the displayed file dialog.
+	 * @return A {@code String} which represents the absolute path of the
+	 * selected file or {@code null} if no file was selected.
+	 */
 	public String getFileName(Stage stage)
 	{
 		configureFileChooser();	

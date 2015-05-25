@@ -29,13 +29,24 @@ import java.io.File;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import javafx.stage.FileChooser.ExtensionFilter;
+/**
+ * Class for saving files with a specific extension.
+ * 
+ * @author krajsz
+ *
+ */
 public class FileSaver 
 {
 
 	private FileChooser file_chooser = new FileChooser();
 
-	
+	/**
+	 * Configures the {@code FileChooser}.
+	 * Sets the title of the {@code FileChooser}.
+	 * Sets the initial directory of the {@code FileChooser}.
+	 * Adds {@link ExtensionFilter}s to the {@code FileChooser}.
+	 */
 	private void configureFileChooser()
 	{
 		this.file_chooser.setTitle("Save your image");
@@ -49,6 +60,14 @@ public class FileSaver
 					);
 	}
 	
+	/**
+	 * Returns a {@code String} which represents the absolute path of the
+	 * specified file name or {@code null} if no file name was specified.
+	 * 
+	 * @param stage		the owner window of the displayed file dialog.
+	 * @return A {@code String} which represents the absolute path of the
+	 * selected file or {@code null} if no file was selected.
+	 */
 	public String getFileName(Stage stage)
 	{
 		configureFileChooser();	

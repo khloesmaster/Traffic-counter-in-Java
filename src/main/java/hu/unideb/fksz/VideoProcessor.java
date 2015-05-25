@@ -22,9 +22,6 @@ package hu.unideb.fksz;
  * #L%
  */
 
-
-
-
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +40,17 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+
+/**
+ * Class for processing video files.
+ * The main purpose of this class is to open video files, and read two
+ * frames in a loop, then process the frames, and search for differences,
+ * then for contours.
+ * @author krajsz
+ *
+ */
+
+
 
 public class VideoProcessor 
 {
@@ -87,40 +95,82 @@ public class VideoProcessor
 	
 	private final Rect imageArea = new Rect(15, 15, 640, 480); 
 		
-	
+	/**
+	 * Constructor for creating a {@code VideoProcessor} object,
+	 * Initializes the {@code controlPoints}.
+	 */
 	public VideoProcessor()
 	{
 		initControlPoints();
 	}
 	
+	
+	/**
+	 * Returns an {@code int} , the {@code detectedCarsCount}.
+	 * 
+	 * @return the {@code detectedCarsCount}
+	 */
 	public int getDetectedCarsCount()
 	{
 		return detectedCarsCount;
 	}
 	
+	/**
+	 * Returns a {@code double}, the frame count of the current video.
+	 * 
+	 * @return the frame count of the current video.
+	 */
 	public double getFrameCount()
 	{
 		return (getVideoCap().isOpened() ? getVideoCap().get(7) : 0);
 	}
+	
+	/**
+	 * Returns an {@code int}, the position of the current frame.
+	 * 
+	 * @return the position of the current frame.
+	 */
 	public int getFramePos()
 	{
 		return (getVideoCap().isOpened() ? (int) getVideoCap().get(1) : 0);
 	}
 	
+	/**
+	 * Returns a {@code Mat}, the {@code frame}.
+	 * 
+	 * @return the {@code frame}
+	 */
 	public Mat getFrame()
 	{
 		return this.frame;
 	}
 	
+	/**
+	 * Returns a {@code double}, the frame per second value of the {@code video}.
+	 * 
+	 * @return the frame per second value of the {@code video}
+	 */
 	public double getFPS()
 	{
 		return (getVideoCap().isOpened() ?  getVideoCap().get(5) : 1);
 	}
 	
+	/**
+	 * Returns a {@code VideoCapture}, an OpenCV class for handling videos.
+	 * 
+	 * @return {@code video}, an OpenCV class for handling videos
+	 */
 	public VideoCapture getVideoCap()
 	{
 		return this.video;
 	}
+	
+	/**
+	 * Sets the frame position of the {@code VideoCapture} if the value
+	 * is valid.
+	 * 
+	 * @param pos	the position to be set.
+	 */
 	public void setFramePos(double pos)
 	{
 		if (pos >= 0 && pos <= getFrameCount())
@@ -140,11 +190,20 @@ public class VideoProcessor
 		}
 	}
 	
+	/**
+	 * Writes the specified {@code text} on the {@code frame}.
+	 * @param text	the text to be written on the {@code frame}.
+	 */
 	public void writeOnFrame(String text)
 	{
 		Imgproc.putText(getFrame(), text, textPosition , Core.FONT_HERSHEY_SIMPLEX , 0.7, fontColor, 2);
 	}
 	
+	/**
+	 * Calculates the length of the loaded video, and returns it as a {@code String}.
+	 * 
+	 * @return the {@code String} representing the length of the video.
+	 */
 	public String getLengthFormatted()
 	{
 		seconds = (int)(getFrameCount() / getFPS());
@@ -159,28 +218,49 @@ public class VideoProcessor
 				(seconds > 9 ? seconds : "0"+ seconds);
 	}
 	
+	
+	/**
+	 * Processes {@code firstFrame} and {@code secondFrame}.
+	 * @param firstFrame 	the first frame of a cycle.
+	 */
 	private void processFrame(Mat firstFrame)
 	{
 		double contourArea = 0;
 		int position = 0;
 		try
 		{
+			/**
+			 * Resizes the {@code firstFrame} to {@code frameSize}. 
+			 *
+			 */
 			Imgproc.resize(firstFrame, firstFrame, frameSize);
 		
+			/**
+			 * Convert the frame in grayscale color space.
+			 */
 			Imgproc.cvtColor(firstFrame, firstGrayImage, Imgproc.COLOR_BGR2GRAY);
 			
+			/**
+			 * {@code video} reads the second frame.
+			 */
 			video.read(secondFrame);
 		
 			Imgproc.resize(secondFrame, secondFrame, frameSize);
 	
 			Imgproc.cvtColor(secondFrame, secondGrayImage, Imgproc.COLOR_BGR2GRAY);
 	
+			/**
+			 * Getting the absolute per-pixel difference of the two frames into {@code differenceOfImages}.
+			 */
 			Core.absdiff(firstGrayImage, secondGrayImage, differenceOfImages);
 			Imgproc.threshold(differenceOfImages, thresholdImage, 25, 255, Imgproc.THRESH_BINARY);
 			Imgproc.blur(thresholdImage, thresholdImage, new Size(12, 12));
 			Imgproc.threshold(thresholdImage, thresholdImage, 25, 255, Imgproc.THRESH_BINARY);
 			contours.clear();
 	
+			/**
+			 * The horizontal line.
+			 */
 			Imgproc.line(firstFrame, controlPoints.get(6), controlPoints.get(7), new Scalar(255,0,0), Imgproc.LINE_4);
 			Imgproc.findContours(thresholdImage, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 			
@@ -193,7 +273,9 @@ public class VideoProcessor
 				hullPoints.add(tmp);
 			}
 			
-	
+			/**
+			 * Searches for the contour with the greatest area.
+			 */
 			if (contours.size() > 0)
 			{
 				for ( int i = 0; i < contours.size(); i++)
@@ -214,6 +296,11 @@ public class VideoProcessor
 			TrafficCounterLogger.errorMessage(e.getMessage());
 		}
 
+		/**
+		 * Checking whether the control point on the left is 
+		 * inside of {@code boundingRectangle}, which is a {@code Rect},
+		 * bounding the greatest contour.
+		 */
 		if (controlPoints.get(6).inside(boundingRectangle))
 		{
 			Imgproc.line(frame, controlPoints.get(0), controlPoints.get(1), new Scalar(0, 0, 255), 2);
@@ -223,7 +310,11 @@ public class VideoProcessor
 		{
 			Imgproc.line(frame, controlPoints.get(0), controlPoints.get(1), new Scalar(0, 255, 0), 2);
 		}
-		
+		/**
+		 * Checking whether the control point on the middle is 
+		 * inside of {@code boundingRectangle}, which is a {@code Rect},
+		 * bounding the greatest contour.
+		 */
 		if (controlPoints.get(8).inside(boundingRectangle))
 		{
 			Imgproc.line(frame, controlPoints.get(2), controlPoints.get(3), new Scalar(0, 0, 255), 2);
@@ -233,7 +324,11 @@ public class VideoProcessor
 		{
 			Imgproc.line(frame, controlPoints.get(2), controlPoints.get(3), new Scalar(0, 255, 0), 2);
 		}
-		
+		/**
+		 * Checking whether the control point on the right is 
+		 * inside of {@code boundingRectangle}, which is a {@code Rect},
+		 * bounding the greatest contour.
+		 */
 		if (controlPoints.get(7).inside(boundingRectangle))
 		{
 			Imgproc.line(frame, controlPoints.get(4), controlPoints.get(5), new Scalar(0, 0, 255), 2);
@@ -244,6 +339,10 @@ public class VideoProcessor
 			Imgproc.line(frame, controlPoints.get(4), controlPoints.get(5), new Scalar(0, 255, 0), 2);
 		}
 		
+		/**
+		 * If the three control points have were inside the {@code boundingRectangle},
+		 * it means that a "car" has passed.
+		 */
 		if (wasAtCenterPoint && wasAtLeftPoint && wasAtRightPoint)
 		{
 			detectedCarsCount++;
@@ -253,13 +352,19 @@ public class VideoProcessor
 			wasAtRightPoint = false;
 			TrafficCounterLogger.infoMessage("Detected " + detectedCarsCount + " car(s)");
 		}
-		
+		/**
+		 * If the contour is big enough, draw it.
+		 */
 		if (contourArea > 3000)
 		{
 			Imgproc.drawContours(frame, contours, position, new Scalar(255,255,255));
 		}
 	}
 	
+	/**
+	 * Does the main loop, if we reach the penultimate frame, 
+	 * it means we have reached the end of the end of the video.
+	 */
 	public void processVideo()
 	{
 		do 
@@ -281,7 +386,6 @@ public class VideoProcessor
 				{
 					frameCounter = 0;
 					finished = true;
-					//detectedCarsCount = 0;
 
 					TrafficCounterLogger.traceMessage("Restarting..");
 					setFramePos(1);
@@ -295,6 +399,12 @@ public class VideoProcessor
 		} while (frameCounter > (getFrameCount()/2) -2);
 	}
 	
+	/**
+	 * Returns an {@code Image}, converted from a {@code Mat}.
+	 * 
+	 * @param frameToConvert	The frame to be converted to a {@code Image}
+	 * @return	The {@code Image}, converted from a {@code Mat}
+	 */
 	public Image convertCvMatToImage(Mat frameToConvert)
 	{
 		if (!buffer.empty())
@@ -314,11 +424,24 @@ public class VideoProcessor
 		return fxImage;
 	}
 	
+	/**
+	 * Returns an {@code Image}, converted from a {@code Mat}, {@code frame}.
+	 * 
+	 * @return an {@code Image}, converted from a {@code Mat}, {@code frame}.
+	 */
 	public Image convertCvMatToImage()
 	{
 		return convertCvMatToImage(getFrame());
 	}
 	
+	/**
+	 * Gets an {@code Image}, converted from the specified index
+	 * of the {@code video}.
+	 * 
+	 * @param pos	the position from which the frame is retrieved.
+	 * @return	an {@code Image}, converted from the specified index 
+	 * of the {@code video}.
+	 */
 	public Image getImageAtPos(int pos)
 	{
 		if (video.isOpened())
@@ -350,6 +473,10 @@ public class VideoProcessor
 			return null;
 		}
 	}
+	
+	/**
+	 * Resets the value of the control points to {@code false}.
+	 */
 	private void resetCheckPoints()
 	{
 		wasAtCenterPoint = false;
@@ -357,6 +484,10 @@ public class VideoProcessor
 		wasAtRightPoint = false;
 	}
 	
+	/**
+	 * Initializes the {@code controlPoints}, 
+	 * {@link VideoProcessor#VideoProcessor() in the constructor}
+	 */
 	private void initControlPoints()
 	{
 		try
@@ -385,6 +516,14 @@ public class VideoProcessor
 		}
 	}
 	
+	/**
+	 * Returns an {@code int}, which represents the failure, or the success
+	 * of the opening of the video specified by the {@code filename}.
+	 * 
+	 * @param filename	The absolute path of the video file to be opened.
+	 * @return an {@code int}, which represents the failure, or the success
+	 * of the opening of the video specified by the {@code filename}
+	 */
 	public int initVideo(String filename)
 	{
 		if (filename != null)
@@ -414,61 +553,121 @@ public class VideoProcessor
 			return 1;
 		}
 	}
+	/**
+	 * Sets detectedCarsCount.
+	 * 
+	 * @param detectedCarsCount to be set.
+	 */
 	public void setDetectedCarsCount(int detectedCarsCount) 
 	{
 		this.detectedCarsCount = detectedCarsCount;
 	}
 
+	/**
+	 * Returns an {@code int}, {@code minutes}, the length of the loaded video in minutes.
+	 * 
+	 * @return the length of the loaded video in minutes.
+	 */
 	public int getMinutes() 
 	{
 		return minutes;
 	}
 
+	/**
+	 * Returns a {@code boolean}, whether the video has finished or not.
+	 * 
+	 * @return whether the video has finished or not.
+	 */
 	public boolean isFinished() 
 	{
 		return finished;
 	}
 	
+	/**
+	 * Sets {@code finished}.
+	 * 
+	 * @param finished to be set.
+	 */
 	public void setFinished(boolean finished)
 	{
 		this.finished = finished;
 	}
 
+	/**
+	 * Returns an {@code int}, the height of the {@code controlPoints}.
+	 * 
+	 * @return the height of the {@code controlPoints}.
+	 */
 	public int getControlPointsHeight() 
 	{
 		return controlPointsHeight;
 	}
 
+	/**
+	 * Returns an {@code int}, the cars per minute value of the video.
+	 * 
+	 * @return the cars per minute value of the video.
+	 */
 	public int getCarsPerMinute()
 	{
 		return carsPerMinute;
 	}
 
+	/**
+	 * Sets {@code carsPerMinute}.
+	 * 
+	 * @param carsPerMinute to be set.
+	 */
 	public void setCarsPerMinute(int carsPerMinute) 
 	{
 		this.carsPerMinute = carsPerMinute;
 	}
 
+	/**
+	 * Returns {@code previousControlPointsHeight}, the previous height of the {@code controlPoints}.
+	 * 
+	 * @return the previous height of the {@code controlPoints}.
+	 */
 	public int getPreviousControlPointsHeight() 
 	{
 		return previousControlPointsHeight;
 	}
 
+	/**
+	 * Sets {@code previousControlPointsHeight}.
+	 * 
+	 * @param previousControlPointsHeight to be set.
+	 */
 	public void setPreviousControlPointsHeight(int previousControlPointsHeight) 
 	{
 		this.previousControlPointsHeight = previousControlPointsHeight;
 	}
 
+	/**
+	 * Returns a {@code Rect}, the designated image area represented by a rectangle.
+	 * 
+	 * @return the designated image area represented by a rectangle.
+	 */
 	public Rect getImageArea() 
 	{
 		return imageArea;
 	}
 	
+	/**
+	 * Returns the height of a control point.
+	 * 
+	 * @return the height of a control point.
+	 */
 	public double getHeightOfAControlPoint()
 	{
 		return controlPoints.get(6).y;
 	}
 	
+	/**
+	 * Sets height of the three control points.
+	 * 
+	 * @param height to be set.
+	 */
 	public void setHeightOfTheControlPoints(double height)
 	{
 		controlPoints.get(6).y = height;

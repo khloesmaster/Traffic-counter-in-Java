@@ -27,31 +27,60 @@ package hu.unideb.fksz;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for logging.
+ * @author krajsz
+ *
+ */
 public class TrafficCounterLogger {
 	
 	private static Logger logger = LoggerFactory.getLogger(TrafficCounterLogger.class);
 
-	
+	/**
+	 * Sends an error log message.
+	 * 
+	 * @param message	The message to be logged.
+	 */
 	public static void errorMessage(String message)
 	{
 		logger.error(message);		
 	}
 	
+	/**
+	 * Sends a warn log message.
+	 * 
+	 * @param message	The message to be logged.
+	 */
 	public static void warnMessage(String message)
 	{
 		logger.warn(message);		
 	}	
 	
+	/**
+	 * Sends an info log message.
+	 * 
+	 * @param message	The message to be logged.
+	 */
 	public static void infoMessage(String message)
 	{
 		logger.info(message);		
 	}
 	
+	/**
+	 * Sends a debug log message.
+	 * 
+	 * @param message	The message to be logged.
+	 */
 	public static void debugMessage(String message)
 	{
 		logger.debug(message);		
 	}	
 	
+	/**
+	 * Sends a trace log message.
+	 * 
+	 * @param message	The message to be logged.
+	 */
 	public static void traceMessage(String message)
 	{
 		logger.trace(message);		

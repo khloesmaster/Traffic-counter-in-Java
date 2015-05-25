@@ -8,6 +8,10 @@
 		<developer>
 			<name>Fábián Kristóf Szabocs</name>
 			<email>f-kristof@hotmail.com</email>
+			
+			<roles>
+				<role>developer</role>
+			</roles>
 		</developer>
 	</developers>
 
