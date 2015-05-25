@@ -74,7 +74,7 @@
 		<resources>
 
 			<resource>
-				<directory>${project.basedir}/lib/opencv/native/ocvnative/3.0-beta</directory>
+				<directory>${project.basedir}/lib/opencv/native</directory>
 				<targetPath>lib/</targetPath>
 			</resource>
 			<resource>
