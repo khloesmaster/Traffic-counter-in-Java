@@ -9,11 +9,17 @@ public class TrafficCounterControllerTest {
 
 	TrafficCounterController testController = new TrafficCounterController();
 
-	/*@Test
+	@Test
+	public void testIsNull()
+	{
+		assertNotNull(testController);
+	}
+	@Test
 	public void testInit()
 	{
 		testController.init();
 	}
+	/*
 	@Test
 	public void testLoadVideo() {
 		testController.init();

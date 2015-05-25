@@ -103,5 +103,79 @@ public class VideoProcessorTest {
 		testProcessor.getVideoCap().read(testProcessor.getFrame());
 		assertNotNull(testProcessor.convertCvMatToImage());
 	}
-
+	
+	@Test
+	public void testGetImageAtPos()
+	{
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+		
+		assertNotNull(testProcessor.getImageAtPos(2));
+		assertNotNull(testProcessor.getImageAtPos(-2));
+		
+	}
+	
+	@Test
+	public void testSetDetectedCarsCount()
+	{
+		testProcessor.setDetectedCarsCount(1);
+	}
+	
+	@Test
+	public void testSetFinished()
+	{
+		testProcessor.setFinished(false);
+	}
+	@Test
+	public void testGetFrameCount()
+	{
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+		testProcessor.getFrameCount();
+	}
+	@Test
+	public void testSetCarsPerMinute()
+	{
+		testProcessor.setCarsPerMinute(2);
+	}
+	@Test
+	public void testGetCarsPerMinute()
+	{
+		testProcessor.getCarsPerMinute();
+	}
+	@Test
+	public void testGetPreviousControlPointsHeight()
+	{
+		testProcessor.getPreviousControlPointsHeight();
+	}
+	@Test
+	public void testSetPreviousControlPointsHeight()
+	{
+		testProcessor.setPreviousControlPointsHeight(100);
+	}
+	@Test
+	public void testGetImageArea()
+	{
+		assertNotNull(testProcessor.getImageArea());
+	}
+	
+	@Test
+	public void testGetFileName()
+	{
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+		
+		assertNotEquals("", testProcessor.getFileName());
+	}
+	
+	@Test
+	public void testGetFramePos()
+	{
+		testProcessor.initVideo(VideoProcessorTest.class.getResource(
+				"/video/Debrecen_Egyetemsgt.mp4").getPath());
+		testProcessor.setFramePos(2);
+		assertNotEquals(0, testProcessor.getFramePos());
+	}
+	
+	
 }
