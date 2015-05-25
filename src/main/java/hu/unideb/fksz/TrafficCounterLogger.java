@@ -34,8 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TrafficCounterLogger {
 	
-	public static Logger logger = LoggerFactory.getLogger(TrafficCounterLogger.class);
-
+    public static Logger logger = LoggerFactory.getLogger(Main.class);
 	/**
 	 * Sends an error log message.
 	 * 

@@ -41,6 +41,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
+import static hu.unideb.fksz.TrafficCounterLogger.logger;
+
 /**
  * Class for processing video files.
  * The main purpose of this class is to open video files, and read two
@@ -186,7 +188,7 @@ public class VideoProcessor
 		}
 		else
 		{
-			TrafficCounterLogger.errorMessage("Invalid positioning number!");
+			logger.error("Invalid positioning number!");
 		}
 	}
 	
@@ -293,7 +295,7 @@ public class VideoProcessor
 		}
 		catch(Exception e)
 		{
-			TrafficCounterLogger.errorMessage(e.getMessage());
+			logger.error(e.getMessage());
 		}
 
 		/**
@@ -350,7 +352,7 @@ public class VideoProcessor
 			wasAtCenterPoint = false;
 			wasAtLeftPoint = false;
 			wasAtRightPoint = false;
-			TrafficCounterLogger.infoMessage("Detected " + detectedCarsCount + " car(s)");
+			logger.info("Detected " + detectedCarsCount + " car(s)");
 		}
 		/**
 		 * If the contour is big enough, draw it.
@@ -374,7 +376,6 @@ public class VideoProcessor
 			{
 				if (frameCounter < (getFrameCount()/2) -1 )
 				{
-					
 					frameCounter++;
 					if (getMinutes() > 0)
 					{
@@ -387,13 +388,13 @@ public class VideoProcessor
 					frameCounter = 0;
 					finished = true;
 
-					TrafficCounterLogger.traceMessage("Restarting..");
+					logger.trace("Restarting..");
 					setFramePos(1);
 				}
 			}
 			else
 			{
-				TrafficCounterLogger.warnMessage("Empty image!");
+				logger.warn("Empty image!");
 				
 			}
 		} while (frameCounter > (getFrameCount()/2) -2);
@@ -418,7 +419,7 @@ public class VideoProcessor
 		}
 		catch(Exception e)
 		{
-			TrafficCounterLogger.errorMessage(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		fxImage = new Image( new ByteArrayInputStream(buffer.toArray()));
 		return fxImage;
@@ -469,7 +470,7 @@ public class VideoProcessor
 		}
 		else
 		{
-			TrafficCounterLogger.errorMessage("VideoCapture not opened!");
+			logger.error("VideoCapture not opened!");
 			return null;
 		}
 	}
@@ -512,7 +513,7 @@ public class VideoProcessor
 		}
 		catch (Exception e)
 		{
-			TrafficCounterLogger.errorMessage(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 	
@@ -541,15 +542,15 @@ public class VideoProcessor
 				resetCheckPoints();
 				finished = false;
 				frameCounter = 0;
-				TrafficCounterLogger.traceMessage("VideoCapture opened successfully!");
+				logger.trace("VideoCapture opened successfully!");
 				return 0;
 			}
-			TrafficCounterLogger.errorMessage("VideoCapture not opened!");
+			logger.error("VideoCapture not opened!");
 			return 1;
 		}
 		else
 		{
-			TrafficCounterLogger.warnMessage("File name is null!");
+			logger.warn("File name is null!");
 			return 1;
 		}
 	}

@@ -2,6 +2,8 @@ package hu.unideb.fksz;
 
 import org.junit.Test;
 import org.opencv.core.Core;
+
+import static hu.unideb.fksz.TrafficCounterLogger.logger;
 import static org.junit.Assert.*;
 
 public class VideoProcessorTest {
@@ -40,7 +42,21 @@ public class VideoProcessorTest {
 		assertNotEquals(0, testProcessor.getHeightOfAControlPoint());
 
 	}
+	@Test
+	public void testVideoProcessor()
+	{
+		testProcessor.processVideo();
+		
+		assertNotEquals(0, testProcessor.getDetectedCarsCount());
+		
+	}
+	@Test
+	public void testGetLengthFormatted()
+	{
+		assertNotEquals("", testProcessor.getLengthFormatted());
+	}
+	
 
-
+	
 	
 }
