@@ -1,0 +1,279 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>hu.unideb.fksz</groupId>
+	<artifactId>Traffic-counter</artifactId>
+	<version>1.0</version>
+	<developers>
+		<developer>
+			<name>Fábián Kristóf Szabocs</name>
+			<email>f-kristof@hotmail.com</email>
+		</developer>
+	</developers>
+
+	<name>Traffic-counter</name>
+	<licenses>
+		<license>
+			<name>GNU GPL v3</name>
+			<url>http://www.gnu.org/copyleft/gpl.html</url>
+		</license>
+	</licenses>
+	<inceptionYear>2015</inceptionYear>
+	<organization>
+		<name>FKSZSoft	</name>
+	</organization>
+	<description>A simple traffic-counter program.</description>
+
+	<repositories>
+		<repository>
+			<id>locals</id>
+			<url>file://${basedir}/lib</url>
+		</repository>
+	</repositories>
+	<properties>
+		<main.class>hu.unideb.fksz.Main</main.class>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+	<dependencies>
+
+		<dependency>
+			<groupId>opencv.lib</groupId>
+			<artifactId>ocvlib</artifactId>
+			<version>3.0-beta</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.12</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<resources>
+
+			<resource>
+				<directory>${project.basedir}/lib/opencv/native/ocvnative/3.0-beta</directory>
+				<targetPath>lib/</targetPath>
+			</resource>
+			<resource>
+				<directory>${project.basedir}/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.basedir}/src/main/resources/config</directory>
+				<targetPath>config/</targetPath>
+			</resource>
+
+			<resource>
+				<directory>${project.basedir}/src/main/resources/logging</directory>
+				<targetPath>logging/</targetPath>
+			</resource>
+			<resource>
+				<directory>${project.basedir}/src/main/resources/fxml</directory>
+				<targetPath>fxml/</targetPath>
+				<includes>
+					<include>*.fxml</include>
+				</includes>
+			</resource>
+
+			<resource>
+				<directory>${project.basedir}/src/main/resources/image</directory>
+				<targetPath>image/</targetPath>
+				<includes>
+					<include>*.jpg</include>
+				</includes>
+			</resource>
+
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath />
+						<argument>-Djava.library.path=${project.build.outputDirectory}/lib/</argument>
+						<argument>${main.class}</argument>
+					</arguments>
+
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.8</version>
+				<configuration>
+					
+					<licenseName>gpl_v3</licenseName>
+				</configuration>
+
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>enforce-java-version</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>1.8</version>
+								</requireJavaVersion>
+								<requireProperty>
+									<property>java.vendor</property>
+									<regex>^Oracle Corporation$</regex>
+								</requireProperty>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+				<configuration>
+					<outputEncoding>UTF-8</outputEncoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>${main.class}</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<show>private</show>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.18.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.14</version>
+				<configuration>
+					<configLocation>${basedir}/src/main/resources/config/checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.3.201502191951</version>
+			</plugin>
+		</plugins>
+	</reporting>
+	<profiles>
+		<profile>
+			<id>jdk7</id>
+			<activation>
+				<jdk>[1.7,1.8)</jdk>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>javafx</artifactId>
+					<version>2.2</version>
+					<scope>system</scope>
+					<systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+				</dependency>
+
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>jdk8</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+
+			<build>
+				<plugins>
+
+					<plugin>
+						<groupId>com.zenjava</groupId>
+						<artifactId>javafx-maven-plugin</artifactId>
+						<version>8.1.2</version>
+						<configuration>
+							<mainClass>${main.class}}</mainClass>
+							<vendor>krajsz</vendor>
+							<certCountry>HU</certCountry>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+
+		</profile>
+	</profiles>
+</project>

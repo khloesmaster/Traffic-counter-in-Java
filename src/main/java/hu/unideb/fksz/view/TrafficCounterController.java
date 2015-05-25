@@ -1,0 +1,422 @@
+package hu.unideb.fksz.view;
+
+/*
+ * #%L
+ * Traffic-counter
+ * %%
+ * Copyright (C) 2015 FKSZSoft
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+
+
+
+import hu.unideb.fksz.FileSaver;
+import hu.unideb.fksz.Main;
+import hu.unideb.fksz.VideoProcessor;
+import hu.unideb.fksz.FileOpener;
+import hu.unideb.fksz.FileNameParser;
+import hu.unideb.fksz.TrafficCounterLogger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.opencv.core.Point;
+import org.opencv.imgcodecs.Imgcodecs;
+
+
+import javafx.application.Platform;
+
+import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
+public class TrafficCounterController 
+{
+
+	private VideoProcessor videoProcessor = new VideoProcessor();
+	private boolean pauseVideo = false;
+	private boolean startButtonClicked = false;
+	private boolean otherFileSelected = false;
+	private String currentlyPlaying;
+	private String lastVideoName;
+	private boolean mouseDragged = false;
+	private Point mousePosition = new Point();
+	
+	
+	private Stage stage;
+	private Timer timer;
+	private List<String> items = new ArrayList<String>();
+	private List<String> results = new ArrayList<String>();
+	
+	private List<String> videoDetails = new ArrayList<String>();
+	private Map<String, String> itemsWithPath = new HashMap<String, String>();
+
+
+	@FXML
+	private ImageView imageView;
+	@FXML
+	private Button loadButton;
+	@FXML
+	private Button saveImageButton;
+	@FXML
+	private Button startButton;
+	@FXML
+	private Label currentVideoDetailsLabel;
+	@FXML
+	private ListView<String> listViewForFileNames;
+	@FXML
+	private ListView<String> listViewForResults;
+	@FXML
+	private ListView<String> listViewForVideoDetails;
+	@FXML
+	private AnchorPane root = new AnchorPane();
+	@FXML
+	private ProgressBar progressBar;
+	
+	@FXML
+	private void listViewForFileNamesClicked()
+	{
+		if (!listViewForFileNames.getSelectionModel().getSelectedItem().equals(currentlyPlaying))
+		{
+			startButton.setText("Start");
+			otherFileSelected = true;
+		}
+		else
+		{
+			if (!pauseVideo)
+			{
+				startButton.setText("Pause");
+			}
+			otherFileSelected = false;
+		}
+	}
+	
+	private int loadVideo(String filename)
+	{
+		if (filename != null)
+		{
+			if ( videoProcessor.initVideo(filename) == 0)
+			{
+				
+				this.imageView.setImage(videoProcessor.getImageAtPos(1));
+				
+				TrafficCounterLogger.infoMessage("Video "+ filename + " loaded!");
+				this.saveImageButton.disableProperty().set(false);
+				this.startButton.disableProperty().set(false);
+				
+				if (!videoDetails.isEmpty())
+				{
+					videoDetails.clear();
+				}
+				videoDetails.add("Video name: " + FileNameParser.getFileName(filename));
+				videoDetails.add("City: " +       FileNameParser.getCity(filename));
+				videoDetails.add("Street: " +     FileNameParser.getStreet(filename));
+				videoDetails.add("Length: " +     videoProcessor.getLengthFormatted());
+				videoDetails.add("FPS: " +        (int)videoProcessor.getFPS());
+				videoDetails.add("Frame count: "+ videoProcessor.getFrameCount());
+				videoDetails.add("Extension: " +  FileNameParser.getExtension(filename));
+				
+				listViewForVideoDetails.setItems(FXCollections.observableList(videoDetails) );
+
+		
+				currentlyPlaying = FileNameParser.getCity(filename) + 
+						   " - " + FileNameParser.getStreet(filename);
+				videoProcessor.setDetectedCarsCount(0);
+				addListViewItem(filename);
+				
+				return 0;
+			}
+		}
+		else if (filename == null)
+		{
+			TrafficCounterLogger.warnMessage("No file was selected!");
+			return 1;
+		}
+		return 0;
+	}
+	
+	@FXML
+	private void loadButtonClicked()
+	{
+		if (!pauseVideo)
+		{
+			pauseVideo = true;
+			this.startButton.setText("Start");
+		}
+		String filename = new FileOpener().getFileName(stage);
+		loadVideo(filename);	
+	}
+	
+	@FXML 
+	private void saveImageClicked()
+	{
+		TrafficCounterLogger.infoMessage("Saving image..");
+		if (!pauseVideo)
+		{
+			pauseVideo = true;
+			startButton.setText("Start");
+		}
+		
+		String filename = new FileSaver().getFileName(stage);
+		if (filename != null)
+		{
+			try
+			{
+				Imgcodecs.imwrite(filename, videoProcessor.getFrame() );
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			pauseVideo = false;
+			startButton.setText("Pause");
+		}
+		else
+		{
+			TrafficCounterLogger.errorMessage("File name was not specified, file was not saved!");
+			pauseVideo = false;
+		}
+	}
+	@FXML
+	private void startButtonClicked()
+	{
+		if (otherFileSelected)
+		{
+			if (loadVideo(itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get())) == 0)
+			{
+				pauseVideo = true;
+				otherFileSelected = false;
+				startButton.setText("Start");
+				timer.cancel();
+
+				results.add(lastVideoName + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
+						+ videoProcessor.getCarsPerMinute() + " cars per minute.");
+				listViewForResults.setItems(FXCollections.observableList(results) );
+
+				videoProcessor.setDetectedCarsCount(0);
+				startProcessing();
+			}
+			else
+			{
+				TrafficCounterLogger.errorMessage("Failed to load " + itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get()));
+			}
+		}
+		
+		if (!startButtonClicked && pauseVideo)
+		{
+			startButtonClicked = true;
+			pauseVideo = false;
+			this.startButton.setText("Pause");
+			startProcessing();
+		}
+		else if ( !pauseVideo )
+		{
+			pauseVideo = true;
+			this.startButton.setText("Start");
+		}
+		else if (pauseVideo)
+		{
+			pauseVideo = false;
+			this.startButton.setText("Pause");
+		}
+		
+	
+	}
+	
+	@FXML
+	private void imageViewClicked()
+	{
+		if (startButtonClicked)
+		{
+			if (!mouseDragged)
+				
+			if (!pauseVideo)
+			{
+				pauseVideo = true;
+				this.startButton.setText("Start");	
+			}
+			else if (pauseVideo)
+			{
+				this.startButton.setText("Pause");
+				pauseVideo = false;
+			}
+		}
+	}
+	public void init()
+	{
+		try
+		{
+			this.imageView.setImage(new Image(Main.class.getClass().getResource("/image/load_video.jpg").toString()));
+			TrafficCounterLogger.traceMessage("Initial picture loaded successfully!");
+		}
+		catch (Exception e)
+		{
+			TrafficCounterLogger.errorMessage("Initial picture failed to load!");
+		}
+		
+		this.listViewForFileNames.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		
+		this.saveImageButton.disableProperty().set(true);
+		this.startButton.disableProperty().set(true);
+		
+		EventHandler<InputEvent> eventHandler = new EventHandler<InputEvent>() {
+			@Override
+			public void handle(InputEvent event) {
+
+				if (event.getEventType().equals(KeyEvent.KEY_PRESSED))
+				{
+					KeyEvent keyevent = (KeyEvent) event.clone();
+					if (keyevent.getCode().equals(KeyCode.ESCAPE))
+					{
+						((Node) (event.getSource())).getScene().getWindow().hide();
+						System.exit(0);
+					}
+				}		
+			}
+		};
+		
+		root.setOnKeyPressed(eventHandler);
+
+		imageView.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+
+				mousePosition.x = event.getX();
+				mousePosition.y = event.getY();
+			
+				if (mousePosition.inside(videoProcessor.getImageArea()))
+				{
+					videoProcessor.setPreviousControlPointsHeight((int)videoProcessor.getHeightOfAControlPoint());	
+				}
+				
+			}
+		});
+		
+		imageView.setOnMouseDragged(new EventHandler<MouseEvent>() 
+		{
+			@Override
+			public void handle(MouseEvent event) 
+			{
+				mouseDragged = true;
+
+				if (mousePosition.inside(videoProcessor.getImageArea()) )
+				{
+					Point relativeMousePosition = new Point(mousePosition.x - event.getX(), mousePosition.y - event.getY());
+					videoProcessor.setHeightOfTheControlPoints(videoProcessor.getPreviousControlPointsHeight() - relativeMousePosition.y);
+				}
+				
+				if (videoProcessor.getHeightOfAControlPoint() < 100)
+				{
+					videoProcessor.setHeightOfTheControlPoints(100);
+				}
+				
+				if (videoProcessor.getHeightOfAControlPoint() > videoProcessor.getImageArea().height - 100)
+				{
+					videoProcessor.setHeightOfTheControlPoints(videoProcessor.getImageArea().height - 100);
+				}
+				
+			}
+		});	
+	
+	}
+	
+	public void setStage(Stage stage)
+	{
+		this.stage = stage;
+	}
+
+	private void addListViewItem(String filename)
+	{
+		if (items != null)
+		{
+			if (!items.contains(currentlyPlaying) && filename!= null)
+			{
+				items.add(currentlyPlaying);
+				itemsWithPath.put(currentlyPlaying, 
+								  filename);
+			}
+			listViewForFileNames.selectionModelProperty().get().select(currentlyPlaying);;
+			listViewForFileNames.setItems(FXCollections.observableList(items) );
+		}
+	}
+	private void startProcessing()
+	{		
+		TimerTask frame_grabber = new TimerTask()
+		{
+			@Override
+			public void run() 
+			{
+				if (!pauseVideo)
+				{
+					videoProcessor.processVideo();
+					videoProcessor.writeOnFrame("Detected cars count: " + videoProcessor.getDetectedCarsCount());
+					
+					Image tmp = videoProcessor.convertCvMatToImage();
+					progressBar.setProgress(videoProcessor.getFramePos() / videoProcessor.getFrameCount());
+					
+					if (videoProcessor.isFinished())
+					{
+						results.add(currentlyPlaying + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
+							+ videoProcessor.getCarsPerMinute() + " cars per minute.");
+						listViewForResults.setItems(FXCollections.observableList(results) );
+						
+						videoProcessor.setDetectedCarsCount(0);
+						videoProcessor.setFinished(false);
+					}
+					else
+					{
+						
+					}
+					Platform.runLater(new Runnable() 
+					{
+						@Override
+						public void run() 
+						{	 
+							imageView.setImage(tmp);	
+						}
+					});
+				}
+			}
+		};		
+		timer = new Timer();
+
+		Double period = 1000 / videoProcessor.getFPS() * 2;			
+		this.timer.schedule(frame_grabber, 0, period.longValue());
+		
+		lastVideoName = currentlyPlaying;
+	}
+}

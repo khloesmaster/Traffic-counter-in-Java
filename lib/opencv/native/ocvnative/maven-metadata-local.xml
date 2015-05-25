@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>opencv.native</groupId>
+  <artifactId>ocvnative</artifactId>
+  <versioning>
+    <release>3.0-beta</release>
+    <versions>
+      <version>3.0-beta</version>
+    </versions>
+    <lastUpdated>20150520164632</lastUpdated>
+  </versioning>
+</metadata>
