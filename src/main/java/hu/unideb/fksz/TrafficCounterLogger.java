@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TrafficCounterLogger {
 	
-	private static Logger logger = LoggerFactory.getLogger(TrafficCounterLogger.class);
+	public static Logger logger = LoggerFactory.getLogger(TrafficCounterLogger.class);
 
 	/**
 	 * Sends an error log message.
@@ -71,7 +71,7 @@ public class TrafficCounterLogger {
 	 * 
 	 * @param message	The message to be logged.
 	 */
-	public static void debugMessage(String message)
+	public static  void debugMessage(String message)
 	{
 		logger.debug(message);		
 	}	

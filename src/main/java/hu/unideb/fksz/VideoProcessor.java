@@ -486,7 +486,7 @@ public class VideoProcessor
 	
 	/**
 	 * Initializes the {@code controlPoints}, 
-	 * {@link VideoProcessor#VideoProcessor() in the constructor}
+	 * {@link VideoProcessor#VideoProcessor() in the constructor}.
 	 */
 	private void initControlPoints()
 	{

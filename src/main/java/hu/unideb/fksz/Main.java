@@ -26,7 +26,7 @@ package hu.unideb.fksz;
 
 import org.opencv.core.Core;
 
-import hu.unideb.fksz.view.TrafficCounterController;
+import  hu.unideb.fksz.view.TrafficCounterController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -34,7 +34,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 
 
-public class Main extends Application {
+public class Main extends Application 
+{
 
 	@Override
 	public void start(Stage primaryStage) 
@@ -64,10 +65,8 @@ public class Main extends Application {
 		}
 	}
 
-	public static void main(String[] args) {
-		
-		System.out.println(System.getProperty("java.library.path"));
-		System.out.println(Core.NATIVE_LIBRARY_NAME);
+	public static void main(String[] args) 
+	{
 		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		TrafficCounterLogger.traceMessage("OpenCV successfully loaded!");

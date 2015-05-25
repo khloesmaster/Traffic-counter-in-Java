@@ -24,7 +24,6 @@ package hu.unideb.fksz.view;
 
 
 
-
 import hu.unideb.fksz.FileSaver;
 import hu.unideb.fksz.Main;
 import hu.unideb.fksz.VideoProcessor;
@@ -106,6 +105,10 @@ public class TrafficCounterController
 	@FXML
 	private ProgressBar progressBar;
 	
+	
+	/**
+	 * Gets called when {@code listViewForFileNames} is clicked.
+	 */
 	@FXML
 	private void listViewForFileNamesClicked()
 	{
@@ -124,6 +127,12 @@ public class TrafficCounterController
 		}
 	}
 	
+	/**
+	 * Tries to load a video, returns whether the {@code VideoProcessor} successfully loaded the video or not.
+	 *  
+	 * @param filename 	the absolute path of the video to be loaded.
+	 * @return 	whether the {@code VideoProcessor} successfully loaded the video or not.
+	 */
 	private int loadVideo(String filename)
 	{
 		if (filename != null)
@@ -168,6 +177,11 @@ public class TrafficCounterController
 		return 0;
 	}
 	
+	/**
+	 * Gets called when the {@code loadButton} is clicked.
+	 * Pauses the video while the file is being selected, if it was playing.
+	 * Calls {@code loadVideo()} to load the selected file.
+	 */
 	@FXML
 	private void loadButtonClicked()
 	{
@@ -180,6 +194,9 @@ public class TrafficCounterController
 		loadVideo(filename);	
 	}
 	
+	/**
+	 * Gets called when the {@code saveImageButton} is clicked.
+	 */
 	@FXML 
 	private void saveImageClicked()
 	{
@@ -210,6 +227,12 @@ public class TrafficCounterController
 			pauseVideo = false;
 		}
 	}
+	
+	/**
+	 * Gets called when the {@code startButton} is clicked.
+	 * Starts or pauses/ unpauses the video, or loads a new video if other than the 
+	 * currently playing video is selected from the {@code listViewForFileNames}
+	 */
 	@FXML
 	private void startButtonClicked()
 	{
@@ -256,6 +279,10 @@ public class TrafficCounterController
 	
 	}
 	
+	/**
+	 * Gets called when {@code imageView} is clicked.
+	 * Pauses or unpauses the video.
+	 */
 	@FXML
 	private void imageViewClicked()
 	{
@@ -275,6 +302,10 @@ public class TrafficCounterController
 			}
 		}
 	}
+	
+	/**
+	 * Initializes some elements of the user interface.
+	 */
 	public void init()
 	{
 		try
@@ -354,11 +385,21 @@ public class TrafficCounterController
 	
 	}
 	
+	/**
+	 * Sets {@code stage}.
+	 * @param stage to be set.
+	 */
 	public void setStage(Stage stage)
 	{
 		this.stage = stage;
 	}
 
+	/**
+	 * Adds an item to the {@code listViewForFileNames} {@code ListView} and
+	 * to {@code items} and {@code itemsWithPath} if it's not containing it.
+	 * 
+	 * @param filename	path to be added to the {@code itemsWithPath}.
+	 */
 	private void addListViewItem(String filename)
 	{
 		if (items != null)
@@ -373,6 +414,10 @@ public class TrafficCounterController
 			listViewForFileNames.setItems(FXCollections.observableList(items) );
 		}
 	}
+	
+	/**
+	 * Main loop, separately in a {@code Timer} thread.
+	 */
 	private void startProcessing()
 	{		
 		TimerTask frame_grabber = new TimerTask()

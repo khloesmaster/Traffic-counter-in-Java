@@ -42,7 +42,7 @@ public class FileNameParser
 	 * Returns a {@code String} which represents a city name if it was
 	 * specified in the file name.
 	 * 
-	 * @param fileName	The {@code String} representing the name of the file.
+	 * @param fileName		The {@code String} representing the name of the file.
 	 * @return a {@code String} which represents a city name if it was specified.
 	 */
 	public static String getCity(String fileName) 
@@ -78,7 +78,7 @@ public class FileNameParser
 	
 	/**
 	 * Returns the name of the file denoted by this abstract pathname,
-	 * or null if the {@code fileName} is null
+	 * or null if the {@code fileName} is null.
 	 * 
 	 * @param fileName 		The {@code String} representing the name of the file.
 	 * @return The name of the file denoted by this abstract pathname,
