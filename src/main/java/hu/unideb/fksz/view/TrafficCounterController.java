@@ -41,9 +41,7 @@ import java.util.TimerTask;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 
-
 import javafx.application.Platform;
-
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -58,7 +56,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -323,64 +320,53 @@ public class TrafficCounterController
 		this.saveImageButton.disableProperty().set(true);
 		this.startButton.disableProperty().set(true);
 		
-		EventHandler<InputEvent> eventHandler = new EventHandler<InputEvent>() {
-			@Override
-			public void handle(InputEvent event) {
+		EventHandler<InputEvent> eventHandler = event -> {
 
-				if (event.getEventType().equals(KeyEvent.KEY_PRESSED))
+			if (event.getEventType().equals(KeyEvent.KEY_PRESSED))
+			{
+				KeyEvent keyevent = (KeyEvent) event.clone();
+				if (keyevent.getCode().equals(KeyCode.ESCAPE))
 				{
-					KeyEvent keyevent = (KeyEvent) event.clone();
-					if (keyevent.getCode().equals(KeyCode.ESCAPE))
-					{
-						((Node) (event.getSource())).getScene().getWindow().hide();
-						System.exit(0);
-					}
-				}		
-			}
+					videoProcessor.getVideoCap().release();
+					((Node) (event.getSource())).getScene().getWindow().hide();
+					System.exit(0);
+				}
+			}		
 		};
 		
 		root.setOnKeyPressed(eventHandler);
 
-		imageView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		imageView.setOnMousePressed(event -> {
 
-			@Override
-			public void handle(MouseEvent event) {
-
-				mousePosition.x = event.getX();
-				mousePosition.y = event.getY();
-			
-				if (mousePosition.inside(videoProcessor.getImageArea()))
-				{
-					videoProcessor.setPreviousControlPointsHeight((int)videoProcessor.getHeightOfAControlPoint());	
-				}
-				
+			mousePosition.x = event.getX();
+			mousePosition.y = event.getY();
+		
+			if (mousePosition.inside(videoProcessor.getImageArea()))
+			{
+				videoProcessor.setPreviousControlPointsHeight((int)videoProcessor.getHeightOfAControlPoint());	
 			}
+			
 		});
 		
-		imageView.setOnMouseDragged(new EventHandler<MouseEvent>() 
-		{
-			@Override
-			public void handle(MouseEvent event) 
-			{
-				mouseDragged = true;
+		imageView.setOnMouseDragged(event -> {
+			mouseDragged = true;
 
-				if (mousePosition.inside(videoProcessor.getImageArea()) )
-				{
-					Point relativeMousePosition = new Point(mousePosition.x - event.getX(), mousePosition.y - event.getY());
-					videoProcessor.setHeightOfTheControlPoints(videoProcessor.getPreviousControlPointsHeight() - relativeMousePosition.y);
-				}
-				
-				if (videoProcessor.getHeightOfAControlPoint() < 100)
-				{
-					videoProcessor.setHeightOfTheControlPoints(100);
-				}
-				
-				if (videoProcessor.getHeightOfAControlPoint() > videoProcessor.getImageArea().height - 100)
-				{
-					videoProcessor.setHeightOfTheControlPoints(videoProcessor.getImageArea().height - 100);
-				}
-				
+			if (mousePosition.inside(videoProcessor.getImageArea()) )
+			{
+				Point relativeMousePosition = new Point(mousePosition.x - event.getX(), mousePosition.y - event.getY());
+				videoProcessor.setHeightOfTheControlPoints(videoProcessor.getPreviousControlPointsHeight() - relativeMousePosition.y);
 			}
+			
+			if (videoProcessor.getHeightOfAControlPoint() < 100)
+			{
+				videoProcessor.setHeightOfTheControlPoints(100);
+			}
+			
+			if (videoProcessor.getHeightOfAControlPoint() > videoProcessor.getImageArea().height - 100)
+			{
+				videoProcessor.setHeightOfTheControlPoints(videoProcessor.getImageArea().height - 100);
+			}
+			
 		});	
 	
 	}
@@ -446,14 +432,7 @@ public class TrafficCounterController
 					{
 						
 					}
-					Platform.runLater(new Runnable() 
-					{
-						@Override
-						public void run() 
-						{	 
-							imageView.setImage(tmp);	
-						}
-					});
+					Platform.runLater(() -> imageView.setImage(tmp));
 				}
 			}
 		};		

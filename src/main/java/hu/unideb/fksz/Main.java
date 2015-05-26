@@ -69,10 +69,7 @@ public class Main extends Application
 	{
 		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		
-		System.out.println(Core.getBuildInformation());
-		
-		TrafficCounterLogger.traceMessage("OpenCV successfully loaded!");
+				
 		launch(args);
 	}
 }
