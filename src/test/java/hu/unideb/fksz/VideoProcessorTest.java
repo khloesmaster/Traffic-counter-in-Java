@@ -89,8 +89,6 @@ public class VideoProcessorTest {
 			testProcessor.processVideo();
 		}
 		
-		System.out.println(System.getProperty("java.library.path"));
-
 		assertTrue(!testProcessor.getFrame().empty());
 		
 		if (testProcessor.isFinished()) {
