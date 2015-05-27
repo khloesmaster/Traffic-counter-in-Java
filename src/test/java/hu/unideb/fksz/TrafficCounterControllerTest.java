@@ -33,7 +33,6 @@ public class TrafficCounterControllerTest {
 	static
 	{
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-
 	}
 	TrafficCounterController testController = new TrafficCounterController();
 
