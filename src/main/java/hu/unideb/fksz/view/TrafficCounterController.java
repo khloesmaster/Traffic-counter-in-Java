@@ -239,9 +239,11 @@ public class TrafficCounterController
 	{
 		if (otherFileSelected)
 		{
+			pauseVideo = true;
+
 			if (loadVideo(itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get())) == 0)
 			{
-				pauseVideo = true;
+				//pauseVideo = true;
 				otherFileSelected = false;
 				startButton.setText("Pause");
 				timer.cancel();
