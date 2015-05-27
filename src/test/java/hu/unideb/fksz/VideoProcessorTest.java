@@ -28,7 +28,8 @@ import org.opencv.core.Core;
 import static org.junit.Assert.*;
 
 public class VideoProcessorTest {
-	static {
+	static 
+	{
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 	VideoProcessor testProcessor = new VideoProcessor();

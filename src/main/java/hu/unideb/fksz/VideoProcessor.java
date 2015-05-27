@@ -56,7 +56,10 @@ import static hu.unideb.fksz.TrafficCounterLogger.logger;
 
 public class VideoProcessor 
 {
-	
+	static 
+	{
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 	private VideoCapture video = new VideoCapture();
 
 	private Mat frame = new Mat();
