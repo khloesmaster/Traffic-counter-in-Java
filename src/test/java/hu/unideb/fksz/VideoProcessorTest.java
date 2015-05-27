@@ -29,14 +29,13 @@ import static org.junit.Assert.*;
 
 public class VideoProcessorTest {
 	static {
-
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 	VideoProcessor testProcessor = new VideoProcessor();
 
 	@Test
 	public void testInitVideo() {
-		System.out.println(System.getProperty("java.library.path"));
+		//System.out.println(System.getProperty("java.library.path"));
 
 		assertEquals(
 				0,

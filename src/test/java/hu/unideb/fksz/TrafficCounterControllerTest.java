@@ -26,9 +26,15 @@ import static org.junit.Assert.*;
 import hu.unideb.fksz.view.TrafficCounterController;
 
 import org.junit.Test;
+import org.opencv.core.Core;
 
 public class TrafficCounterControllerTest {
 
+	static
+	{
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
+	}
 	TrafficCounterController testController = new TrafficCounterController();
 
 	@Test

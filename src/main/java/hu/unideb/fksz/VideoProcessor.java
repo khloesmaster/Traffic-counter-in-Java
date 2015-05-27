@@ -56,6 +56,7 @@ import static hu.unideb.fksz.TrafficCounterLogger.logger;
 
 public class VideoProcessor 
 {
+	
 	private VideoCapture video = new VideoCapture();
 
 	private Mat frame = new Mat();
