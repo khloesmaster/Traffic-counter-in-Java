@@ -1,2 +1,2 @@
-# Traffic counter in Java
+# Traffic counter written in Java using OpenCV API
 
