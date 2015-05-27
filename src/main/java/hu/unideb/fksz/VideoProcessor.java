@@ -262,7 +262,7 @@ public class VideoProcessor
 			Core.absdiff(firstGrayImage, secondGrayImage, differenceOfImages);
 			Imgproc.threshold(differenceOfImages, thresholdImage, 25, 255, Imgproc.THRESH_BINARY);
 			Imgproc.blur(thresholdImage, thresholdImage, new Size(12, 12));
-			Imgproc.threshold(thresholdImage, thresholdImage, 25, 255, Imgproc.THRESH_BINARY);
+			Imgproc.threshold(thresholdImage, thresholdImage, 20, 255, Imgproc.THRESH_BINARY);
 			contours.clear();
 	
 			/**

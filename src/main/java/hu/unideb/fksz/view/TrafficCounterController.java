@@ -68,7 +68,6 @@ public class TrafficCounterController
 	private boolean otherFileSelected = false;
 	private String currentlyPlaying;
 	private String lastVideoName;
-	private boolean mouseDragged = false;
 	private Point mousePosition = new Point();
 	
 	
@@ -333,6 +332,7 @@ public class TrafficCounterController
 				KeyEvent keyevent = (KeyEvent) event.clone();
 				if (keyevent.getCode().equals(KeyCode.ESCAPE))
 				{
+					timer.cancel();
 					videoProcessor.getVideoCap().release();
 					((Node) (event.getSource())).getScene().getWindow().hide();
 					System.exit(0);
@@ -355,7 +355,6 @@ public class TrafficCounterController
 		});
 		
 		imageView.setOnMouseDragged(event -> {
-			mouseDragged = true;
 
 			if (mousePosition.inside(videoProcessor.getImageArea()) )
 			{
