@@ -140,8 +140,11 @@ public class TrafficCounterController
 				this.imageView.setImage(videoProcessor.getImageAtPos(1));
 				
 				TrafficCounterLogger.infoMessage("Video "+ filename + " loaded!");
-				this.saveImageButton.disableProperty().set(false);
-				this.startButton.disableProperty().set(false);
+				if (this.saveImageButton.disableProperty().get() == true)
+				{
+					this.saveImageButton.disableProperty().set(false);
+					this.startButton.disableProperty().set(false);
+				}
 				
 				if (!videoDetails.isEmpty())
 				{
@@ -160,7 +163,8 @@ public class TrafficCounterController
 		
 				currentlyPlaying = FileNameParser.getCity(filename) + 
 						   " - " + FileNameParser.getStreet(filename);
-				videoProcessor.setDetectedCarsCount(0);
+				if (!otherFileSelected)
+					videoProcessor.setDetectedCarsCount(0);
 				addListViewItem(filename);
 				
 				return 0;
@@ -239,7 +243,7 @@ public class TrafficCounterController
 			{
 				pauseVideo = true;
 				otherFileSelected = false;
-				startButton.setText("Start");
+				startButton.setText("Pause");
 				timer.cancel();
 
 				results.add(lastVideoName + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
@@ -283,7 +287,7 @@ public class TrafficCounterController
 	@FXML
 	private void imageViewClicked()
 	{
-		if (startButtonClicked)
+		/*if (startButtonClicked)
 		{
 			if (!mouseDragged)
 				
@@ -297,7 +301,7 @@ public class TrafficCounterController
 				this.startButton.setText("Pause");
 				pauseVideo = false;
 			}
-		}
+		}*/
 	}
 	
 	/**
