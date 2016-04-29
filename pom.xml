@@ -23,7 +23,7 @@
 			<url>http://www.gnu.org/copyleft/gpl.html</url>
 		</license>
 	</licenses>
-	<inceptionYear>2015</inceptionYear>
+	<inceptionYear>2016</inceptionYear>
 	<organization>
 		<name>FKSZSoft	</name>
 	</organization>
@@ -33,6 +33,10 @@
 		<repository>
 			<id>locals</id>
 			<url>file://${basedir}/lib</url>
+		</repository>
+		<repository>
+			<id>ojdbc</id>
+			<url>file://${project.basedir}/lib</url>
 		</repository>
 	</repositories>
 	<properties>
@@ -48,9 +52,14 @@
 			<version>3.0-beta</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.2.0</version>
+		</dependency>
 
-		<!-- <dependency> <groupId>org.bytedeco.javacpp-presets</groupId> <artifactId>ffmpeg</artifactId> 
-			<version>2.6.1-0.11</version> </dependency> <dependency> <groupId>com.google.code.jlibav</groupId> 
+		<!-- <dependency> <groupId>org.bytedeco.javacpp-presets</groupId> <artifactId>ffmpeg</artifactId>
+			<version>2.6.1-0.11</version> </dependency> <dependency> <groupId>com.google.code.jlibav</groupId>
 			<artifactId>jlibav</artifactId> <version>0.2.1</version> </dependency> -->
 
 		<dependency>
@@ -260,7 +269,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -280,7 +289,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<!-- m2e doesn't know what to do with jacoco, let's ignore it or 
+										<!-- m2e doesn't know what to do with jacoco, let's ignore it or
 											annoying error markers appear see http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
 										<ignore></ignore>
 									</action>
