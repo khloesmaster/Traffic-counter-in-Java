@@ -37,7 +37,6 @@ public class User {
 	}
 
 	public User(String name, String password, String role) {
-		super();
 		this.name = name;
 		this.password = password;
 		this.role = role;
@@ -68,6 +67,5 @@ public class User {
 	}
 
 	public User() {
-		super();
 	}
 }
