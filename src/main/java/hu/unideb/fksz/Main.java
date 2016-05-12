@@ -25,6 +25,7 @@ package hu.unideb.fksz;
 
 import org.opencv.core.Core;
 
+import hu.unideb.fksz.model.ObservationDAO;
 import  hu.unideb.fksz.view.TrafficCounterController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +36,6 @@ import javafx.scene.layout.AnchorPane;
 
 public class Main extends Application
 {
-
 	@Override
 	public void start(Stage primaryStage)
 	{
@@ -50,7 +50,7 @@ public class Main extends Application
 			primaryStage.setResizable(false);
 			primaryStage.centerOnScreen();
 			primaryStage.show();
-
+							
 			TrafficCounterController controller = loader.getController();
 
 			controller.init();

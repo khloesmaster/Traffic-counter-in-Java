@@ -11,7 +11,7 @@ package hu.unideb.fksz;
  * #%L
  * Traffic-counter
  * %%
- * Copyright (C) 2015 FKSZSoft
+ * Copyright (C) 2016 FKSZSoft
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

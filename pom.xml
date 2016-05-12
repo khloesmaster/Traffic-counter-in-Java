@@ -57,6 +57,12 @@
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.2.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.1.0.Final</version>
+		</dependency>
 
 		<!-- <dependency> <groupId>org.bytedeco.javacpp-presets</groupId> <artifactId>ffmpeg</artifactId>
 			<version>2.6.1-0.11</version> </dependency> <dependency> <groupId>com.google.code.jlibav</groupId>
@@ -85,7 +91,6 @@
 	</dependencies>
 	<build>
 		<resources>
-
 			<resource>
 				<directory>${project.basedir}/lib/opencv/native</directory>
 				<targetPath>lib/</targetPath>
@@ -107,6 +112,7 @@
 				<directory>${project.basedir}/src/main/resources/logging</directory>
 				<targetPath>logging/</targetPath>
 			</resource>
+			
 			<resource>
 				<directory>${project.basedir}/src/main/resources/fxml</directory>
 				<targetPath>fxml/</targetPath>
@@ -121,6 +127,10 @@
 				<includes>
 					<include>*.jpg</include>
 				</includes>
+			</resource>
+		
+			<resource>
+				<directory>${project.basedir}/src/main/resources</directory>
 			</resource>
 
 		</resources>
