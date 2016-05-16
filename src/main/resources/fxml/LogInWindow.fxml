@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="199.0" minWidth="300.0" prefHeight="199.0" prefWidth="436.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.LogInController">
+   <children>
+      <PasswordField fx:id="logInWindowPasswordField" layoutX="140.0" layoutY="95.0" onMouseClicked="#logInButtonClicked" />
+      <TextField fx:id="logInWindowUserNameTextField" layoutX="140.0" layoutY="64.0" />
+      <Label layoutX="52.0" layoutY="69.0" text="Username" />
+      <Label layoutX="55.0" layoutY="100.0" text="Password" />
+      <Button fx:id="logInWindowLogInButton" layoutX="197.0" layoutY="136.0" mnemonicParsing="false" onMouseClicked="#logInButtonClicked" text="Log in" />
+   </children>
+</AnchorPane>
