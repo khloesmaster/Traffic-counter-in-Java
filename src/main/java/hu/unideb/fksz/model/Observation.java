@@ -33,6 +33,14 @@ public class Observation {
 	@Column(name = "observation_date")
 	private Timestamp observationDate;
 
+	public int getObservationId() {
+		return observationId;
+	}
+
+	public void setObservationId(int observationId) {
+		this.observationId = observationId;
+	}
+
 	public int getMonitor_id() {
 		return monitorId;
 	}

@@ -53,6 +53,9 @@ public class ObservationDAO {
 				.createQuery("select obs from Observation obs"
 						+ " where MONITOR_ID=" + monitorId, Observation.class);
 		List<Observation> observations = observationsQuery.getResultList();
+		for(Observation o: observations) {
+			System.out.println();
+		}
 		return observations;
 	}
 }
