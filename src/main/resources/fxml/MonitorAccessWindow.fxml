@@ -5,15 +5,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="300.0" minWidth="300.0" prefHeight="463.0" prefWidth="526.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.MonitorAccessController">
+<AnchorPane minHeight="300.0" minWidth="300.0" prefHeight="463.0" prefWidth="478.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.MonitorAccessController">
    <children>
-      <TableView fx:id="monitorAccessWindowTableView" layoutX="14.0" layoutY="14.0" prefHeight="435.0" prefWidth="500.0">
+      <TableView fx:id="monitorAccessWindowTableView" layoutX="14.0" layoutY="14.0" prefHeight="439.0" prefWidth="450.0">
          <columns>
-            <TableColumn fx:id="monitorAccessRowIdColumn" editable="false" prefWidth="30.0" text="#" />
             <TableColumn fx:id="monitorAccessObservationIdColumn" editable="false" prefWidth="119.0" text="Observation ID" />
             <TableColumn fx:id="monitorAccessVideoTitleColumn" editable="false" prefWidth="117.0" text="Video title" />
             <TableColumn fx:id="monitorAccessTrafficCountColumn" prefWidth="102.0" text="Traffic count" />
-            <TableColumn fx:id="monitorAccessDateColumn" prefWidth="131.0" text="Date" />
+            <TableColumn fx:id="monitorAccessDateColumn" prefWidth="111.0" text="Date" />
          </columns>
       </TableView>
    </children>

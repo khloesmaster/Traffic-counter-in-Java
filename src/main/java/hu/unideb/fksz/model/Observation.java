@@ -20,51 +20,51 @@ public class Observation {
 	@SequenceGenerator(name = "IdGenerator", sequenceName = "OBSERVATION_ID_GENERATOR", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IdGenerator")
 	private int observationId;
-	
+
 	@Column(name = "monitor_id")
 	private int monitorId;
-	
+
 	@Column(name = "observed_video_title")
 	private String observedVideoTitle;
-	
+
 	@Column(name = "traffic_count")
 	private int trafficCount;
-	
+
 	@Column(name = "observation_date")
 	private Timestamp observationDate;
-	
+
 	public int getMonitor_id() {
 		return monitorId;
 	}
-	
+
 	public void setMonitor_id(int monitorId) {
 		this.monitorId = monitorId;
 	}
-	
+
 	public String getObservedVideoTitle() {
 		return observedVideoTitle;
 	}
-	
+
 	public void setObservedVideoTitle(String observedVideoTitle) {
 		this.observedVideoTitle = observedVideoTitle;
 	}
-	
+
 	public int getTrafficCount() {
 		return trafficCount;
 	}
-	
+
 	public void setTrafficCount(int trafficCount) {
 		this.trafficCount = trafficCount;
 	}
-	
+
 	public Timestamp getObservationDate() {
 		return observationDate;
 	}
-	
+
 	public void setObservationDate(Timestamp observationDate) {
 		this.observationDate = observationDate;
 	}
-	
+
 	public Observation(int observationId, int monitorId, String observedVideoTitle, int trafficCount, Timestamp observationDate) {
 		this.observationId = observationId;
 		this.monitorId = monitorId;
@@ -72,7 +72,7 @@ public class Observation {
 		this.trafficCount = trafficCount;
 		this.observationDate = observationDate;
 	}
-	
+
 	public Observation() {
 	}
 }
