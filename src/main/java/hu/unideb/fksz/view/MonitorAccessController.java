@@ -1,10 +1,15 @@
 package hu.unideb.fksz.view;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import hu.unideb.fksz.model.ObservationDAO;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class MonitorAccessController {
+public class MonitorAccessController implements Initializable {
 
 	@FXML
 	private TableView monitorAccessWindowTableView;
@@ -23,5 +28,17 @@ public class MonitorAccessController {
 
 	@FXML
 	private TableColumn monitorAccessRowIdColumn;
+
+	public void populateTable() {
+
+
+
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

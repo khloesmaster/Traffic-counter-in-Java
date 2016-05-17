@@ -28,6 +28,7 @@ import hu.unideb.fksz.FileSaver;
 import hu.unideb.fksz.Main;
 import hu.unideb.fksz.VideoProcessor;
 import hu.unideb.fksz.model.ObservationDAO;
+import hu.unideb.fksz.model.User;
 import hu.unideb.fksz.model.UserDAO;
 import hu.unideb.fksz.FileOpener;
 import hu.unideb.fksz.FileNameParser;
@@ -86,6 +87,7 @@ public class TrafficCounterController implements Initializable
 
 	private List<String> videoDetails = new ArrayList<String>();
 	private Map<String, String> itemsWithPath = new HashMap<String, String>();
+	private User loggedUser;
 
 	@FXML
 	private ImageView imageView;
@@ -112,6 +114,15 @@ public class TrafficCounterController implements Initializable
 	@FXML
 	private Button logInButton;
 
+	public User getLoggedUser() {
+		return loggedUser;
+	}
+
+	public void setLoggedUser(User loggedUser) {
+		this.loggedUser = loggedUser;
+		setTitle("Traffic counter - " + loggedUser.getName() + "-"+ loggedUser.getRole());
+	}
+
 	@FXML
 	private void logInButtonClicked() {
 		try {
@@ -130,7 +141,35 @@ public class TrafficCounterController implements Initializable
 
 	@FXML
 	private void observationsButtonClicked() {
+		try {
+			Stage stage;
+			Parent root;
+			Scene scene = null;
+			FXMLLoader loader;
+			stage = (Stage) logInButton.getScene().getWindow();
+			if (getLoggedUser().getRole().equals(UserDAO.ADMIN_ROLE)) {
+				loader = new FXMLLoader(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
+				// root =
+				// FXMLLoader.load(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
+				root = loader.load();
+				scene = new Scene(root);
+				loader.<AdminAccessController>getController().populateUserList();
+			} else if (getLoggedUser().getRole().equals(UserDAO.MONITOR_ROLE)) {
+				root = FXMLLoader.load(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
+				scene = new Scene(root);
+			}
+			stage.setScene(scene);
+			stage.show();
+		} catch (IOException e) {
+			TrafficCounterLogger.errorMessage(e.toString());
+		}
+	}
 
+	private void setTitle(String title) {
+		Stage stage;
+		Parent root;
+		stage = (Stage) logInButton.getScene().getWindow();
+		stage.setTitle(title);
 	}
 
 	/**
@@ -341,7 +380,6 @@ public class TrafficCounterController implements Initializable
 	 */
 	private void init()
 	{
-		System.out.println("initializing..");
 		try
 		{
 			this.imageView.setImage(new Image(Main.class.getClass().getResource("/image/load_video.jpg").toString()));

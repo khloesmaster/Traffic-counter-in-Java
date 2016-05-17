@@ -47,7 +47,7 @@ public class ObservationDAO {
 		entityManager.getTransaction().begin();
 
 		Query monitorIdQuery = entityManager
-				.createQuery("select user_id from TRAFFIC_COUNTER_USERS" + " WHERE USER_NAME = " + user.getName());
+				.createQuery("select u.user_id from User u" + " WHERE USER_NAME = " + user.getName());
 		int monitorId = (int) monitorIdQuery.getSingleResult();
 
 		Query observationsQuery = entityManager

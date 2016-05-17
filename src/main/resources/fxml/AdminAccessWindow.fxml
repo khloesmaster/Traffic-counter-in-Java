@@ -12,7 +12,7 @@
         <columns>
           <TableColumn fx:id="adminAccessRowIdColumn" prefWidth="33.0" text="#" />
           <TableColumn fx:id="adminAccessObservationIdColumn" prefWidth="117.0" text="Observation ID" />
-            <TableColumn fx:id="adminAccesVideoTitleColumn" prefWidth="84.0" text="Video title" />
+            <TableColumn fx:id="adminAccessVideoTitleColumn" prefWidth="84.0" text="Video title" />
             <TableColumn fx:id="adminAccessTrafficCountColumn" prefWidth="103.0" text="Traffic count" />
             <TableColumn fx:id="adminAccessDateColumn" prefWidth="53.0" text="Date" />
         </columns>

@@ -50,11 +50,6 @@ public class Main extends Application
 			primaryStage.setResizable(false);
 			primaryStage.centerOnScreen();
 			primaryStage.show();
-
-			//TrafficCounterController controller = loader.getController();
-
-			//controller.init();
-			//controller.setStage(primaryStage);
 		}
 		catch (Exception e)
 		{

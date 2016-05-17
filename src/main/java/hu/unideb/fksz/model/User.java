@@ -17,17 +17,22 @@ public class User {
 	@SequenceGenerator(name = "IdGenerator", sequenceName = "user_id_generator", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IdGenerator")
 	private int id;
-	
+
 	@Column(name = "user_name")
 	private String name;
-	
+
 	@Column(name = "user_password")
 	private String password;
-	
+
 	@Column(name = "user_role")
 	private String role;
 
-	
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 	public String getRole() {
 		return role;
 	}

@@ -58,7 +58,7 @@ public class VideoProcessor
 	{
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
-	private VideoCapture video = null /*= new VideoCapture()*/;
+	private VideoCapture video =  new VideoCapture();
 
 	private Mat frame = new Mat();
 	private Image fxImage = null;
@@ -106,9 +106,7 @@ public class VideoProcessor
 	 */
 	public VideoProcessor()
 	{
-		System.out.println("VideoProcessorConstructor");
 		initControlPoints();
-		video = new VideoCapture();
 	}
 
 	public boolean isOpened()
