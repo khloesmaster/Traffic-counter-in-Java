@@ -1,10 +1,14 @@
 package hu.unideb.fksz.view;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import hu.unideb.fksz.model.Observation;
+import hu.unideb.fksz.model.ObservationDAO;
+import hu.unideb.fksz.model.User;
 import hu.unideb.fksz.model.UserDAO;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -16,36 +20,43 @@ import javafx.scene.control.TableView;
 public class AdminAccessController implements Initializable {
 
 	@FXML
-	private TableView adminAccessWindowTableView;
+	private TableView<Observation> adminAccessWindowTableView;
 
 	@FXML
-	private TableColumn adminAccessRowIdColumn;
+	private TableColumn<Observation, Integer> adminAccessRowIdColumn;
 
 	@FXML
-	private TableColumn adminAccessObservationIdColumn;
+	private TableColumn<Observation,Integer> adminAccessObservationIdColumn;
 
 	@FXML
-	private TableColumn adminAccessVideoTitleColumn;
+	private TableColumn<Observation, String> adminAccessVideoTitleColumn;
 
 	@FXML
-	private TableColumn adminAccessTrafficCountColumn;
+	private TableColumn<Observation, Integer> adminAccessTrafficCountColumn;
 
 	@FXML
-	private TableColumn adminAccessDateColumn;
+	private TableColumn<Observation, LocalDateTime> adminAccessDateColumn;
 
 	@FXML
-	private ListView adminAccessWindowListView;
+	private ListView<String> adminAccessWindowListView;
 
 	public void populateUserList() {
 	    adminAccessWindowListView.setItems(UserDAO.usersString());
 	}
 
-	public void populateObservationsTable() {
+	public void populateObservationsTable(User user) {
+		List<Observation> observationsOfUser = ObservationDAO.observationsOf(user);
 
 	}
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		populateObservationsTable();
+	}
+
+	@FXML
+	public void onAdminAccessUsersListViewClicked() {
+		User selectedUser = new User();
+		selectedUser.setName(adminAccessWindowListView.getSelectionModel().getSelectedItem());
+
 	}
 
 }

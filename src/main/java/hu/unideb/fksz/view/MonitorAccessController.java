@@ -1,43 +1,46 @@
 package hu.unideb.fksz.view;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
+import hu.unideb.fksz.model.Observation;
 import hu.unideb.fksz.model.ObservationDAO;
+import hu.unideb.fksz.model.User;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 
 public class MonitorAccessController implements Initializable {
 
 	@FXML
-	private TableView monitorAccessWindowTableView;
+	private TableView<Observation> monitorAccessWindowTableView;
 
 	@FXML
-	private TableColumn monitorAccessObservationIdColumn;
+	private TableColumn<Observation, Integer> monitorAccessObservationIdColumn;
 
 	@FXML
-	private TableColumn monitorAccessVideoTitleColumn;
+	private TableColumn<Observation, String> monitorAccessVideoTitleColumn;
 
 	@FXML
-	private TableColumn monitorAccessTrafficCountColumn;
+	private TableColumn<Observation, Integer> monitorAccessTrafficCountColumn;
 
 	@FXML
-	private TableColumn monitorAccessDateColumn;
+	private TableColumn<Observation, LocalDateTime> monitorAccessDateColumn;
 
 	@FXML
-	private TableColumn monitorAccessRowIdColumn;
+	private TableColumn<Observation, Integer> monitorAccessRowIdColumn;
 
-	public void populateTable() {
-
-
-
+	//ObservableList<Observation>
+	public void populateObservationsTable(User user) {
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
 
 	}
 

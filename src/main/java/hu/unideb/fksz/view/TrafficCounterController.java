@@ -149,14 +149,15 @@ public class TrafficCounterController implements Initializable
 			stage = (Stage) logInButton.getScene().getWindow();
 			if (getLoggedUser().getRole().equals(UserDAO.ADMIN_ROLE)) {
 				loader = new FXMLLoader(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
-				// root =
-				// FXMLLoader.load(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
 				root = loader.load();
 				scene = new Scene(root);
 				loader.<AdminAccessController>getController().populateUserList();
 			} else if (getLoggedUser().getRole().equals(UserDAO.MONITOR_ROLE)) {
-				root = FXMLLoader.load(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
+				loader = new FXMLLoader(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
+				root = loader.load();
 				scene = new Scene(root);
+				setTitle("Observations of "+ loggedUser.getName());
+				loader.<MonitorAccessController>getController().populateObservationsTable(loggedUser);
 			}
 			stage.setScene(scene);
 			stage.show();

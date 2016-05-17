@@ -7,7 +7,7 @@
 
 <AnchorPane minHeight="400.0" minWidth="400.0" prefHeight="445.0" prefWidth="566.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.AdminAccessController">
    <children>
-      <ListView fx:id="adminAccessWindowListView" layoutX="420.0" layoutY="34.0" prefHeight="392.0" prefWidth="133.0" />
+      <ListView fx:id="adminAccessWindowListView" layoutX="420.0" layoutY="34.0" onMouseClicked="#onAdminAccessUsersListViewClicked" prefHeight="392.0" prefWidth="133.0" />
       <TableView fx:id="adminAccessWindowTableView" layoutX="14.0" layoutY="34.0" prefHeight="392.0" prefWidth="391.0">
         <columns>
           <TableColumn fx:id="adminAccessRowIdColumn" prefWidth="33.0" text="#" />

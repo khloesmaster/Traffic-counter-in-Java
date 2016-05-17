@@ -31,32 +31,32 @@ public class UserDAO {
 	}
 
 	public static boolean logInUser(User user) {
-		entityManager.getTransaction().begin();
+		try {
+			TypedQuery<User> query = entityManager
+					.createQuery("Select u from User u where" + " user_name ='" + user.getName() + "'", User.class);
+			List<User> users = query.getResultList();
 
-		TypedQuery<User> query =  entityManager.
-				createQuery("Select u from User u where"
-				+" user_name ='" + user.getName()+ "'", User.class);
-		List<User> users = query.getResultList();
-
-		for(int i = 0; i < users.size(); ++i) {
-			System.out.println(users.get(i).getName()+ " " + users.get(i).getPassword());
-		}
-		System.out.println("User:" + user.getName() + " " + user.getPassword());
-		if (users.size() > 0) {
-			if (users.get(0).getPassword().equals(user.getPassword())) {
-				if (users.get(0).getRole().equals(user.getRole())) {
-					return true;
+			for (int i = 0; i < users.size(); ++i) {
+				System.out.println(users.get(i).getName() + " " + users.get(i).getPassword());
+			}
+			System.out.println("User:" + user.getName() + " " + user.getPassword());
+			if (users.size() > 0) {
+				if (users.get(0).getPassword().equals(user.getPassword())) {
+					if (users.get(0).getRole().equals(user.getRole())) {
+						return true;
+					} else {
+						TrafficCounterLogger.warnMessage("User's role not correct!");
+						return false;
+					}
 				} else {
-					TrafficCounterLogger.warnMessage("User's role not correct!");
+					TrafficCounterLogger.warnMessage("Incorrect password!");
 					return false;
 				}
-			} else {
-				TrafficCounterLogger.warnMessage("Incorrect password!");
-				return false;
 			}
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			TrafficCounterLogger.errorMessage(e.toString());
 		}
-		entityManager.flush();
-		entityManager.getTransaction().commit();
 
 		return false;
 	}
@@ -90,15 +90,19 @@ public class UserDAO {
 	}
 
 	public static List<User> users() {
-		entityManager.getTransaction().begin();
+		try {
+			TypedQuery<User> monitorsQuery = entityManager
+					.createQuery("select u from User u where user_role='monitor'", User.class);
 
-		TypedQuery<User> monitorsQuery = entityManager.createQuery("select u from User u"
-				+ "where user_role='monitor'", User.class);
+			List<User> monitors = monitorsQuery.getResultList();
+			System.out.println(monitors.size());
+			return monitors;
 
-		List<User> monitors = monitorsQuery.getResultList();
-		System.out.println(monitors.size());
-		entityManager.getTransaction().commit();
-		return monitors;
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			TrafficCounterLogger.errorMessage(e.toString());
+			return null;
+		}
 	}
 
 	public static ObservableList<String> usersString() {
