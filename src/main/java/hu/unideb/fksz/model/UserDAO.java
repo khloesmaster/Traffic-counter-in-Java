@@ -24,6 +24,14 @@ public class UserDAO {
 		entityManagerFactory.close();
 	}
 
+	public static boolean logInUser(User user) {
+		entityManager.getTransaction().begin();
+
+
+		entityManager.getTransaction().commit();
+		return false;
+	}
+
 	public static void registerUser(User user) {
 		entityManager.getTransaction().begin();
 		if (!entityManager.contains(user)) {
@@ -51,13 +59,13 @@ public class UserDAO {
 		}
 		entityManager.getTransaction().commit();
 	}
-	
+
 	public static List<User> users() {
 		entityManager.getTransaction().begin();
-		
+
 		Query monitorsQuery = entityManager.createQuery("select * from traffic_counter_users"
 				+ "where user_role <> admin");
-		
+
 		List<User> monitors = (List<User>)monitorsQuery.getResultList();
 		entityManager.getTransaction().commit();
 		return monitors;

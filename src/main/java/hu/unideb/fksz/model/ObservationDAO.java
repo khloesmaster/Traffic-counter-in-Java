@@ -58,5 +58,4 @@ public class ObservationDAO {
 		entityManager.getTransaction().commit();
 		return observations;
 	}
-
 }

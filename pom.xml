@@ -9,7 +9,6 @@
 		<developer>
 			<name>Fábián Kristóf Szabocs</name>
 			<email>f-kristof@hotmail.com</email>
-
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -49,7 +48,7 @@
 		<dependency>
 			<groupId>opencv.lib</groupId>
 			<artifactId>ocvlib</artifactId>
-			<version>3.0-beta</version>
+			<version>3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -57,7 +56,7 @@
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.2.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -112,7 +111,7 @@
 				<directory>${project.basedir}/src/main/resources/logging</directory>
 				<targetPath>logging/</targetPath>
 			</resource>
-			
+
 			<resource>
 				<directory>${project.basedir}/src/main/resources/fxml</directory>
 				<targetPath>fxml/</targetPath>
@@ -128,7 +127,7 @@
 					<include>*.jpg</include>
 				</includes>
 			</resource>
-		
+
 			<resource>
 				<directory>${project.basedir}/src/main/resources</directory>
 			</resource>

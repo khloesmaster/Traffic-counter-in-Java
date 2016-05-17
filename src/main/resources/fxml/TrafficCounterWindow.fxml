@@ -19,7 +19,7 @@
       <Label fx:id="currentVideoDetailsLabel" layoutX="731.0" layoutY="172.0" text="Current video details" />
       <ListView fx:id="listViewForVideoDetails" layoutX="666.0" layoutY="187.0" prefHeight="119.0" prefWidth="266.0" />
       <Label layoutX="776.0" layoutY="387.0" text="Results" />
-      <Button fx:id="logInButton" layoutX="700.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#logInClicked" prefHeight="25.0" prefWidth="70.0" text="Log in" />
-      <Button layoutX="805.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#optionsClicked" prefHeight="25.0" prefWidth="70.0" text="Options" />
+      <Button fx:id="logInButton" layoutX="692.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#logInButtonClicked" prefHeight="25.0" prefWidth="104.0" text="Log in" />
+      <Button fx:id="observationsButton" layoutX="805.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#observationsButtonClicked" prefHeight="25.0" prefWidth="104.0" text="Observations" />
    </children>
 </AnchorPane>

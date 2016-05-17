@@ -52,14 +52,13 @@ import static hu.unideb.fksz.TrafficCounterLogger.logger;
  *
  */
 
-
 public class VideoProcessor
 {
 	static
 	{
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
-	private VideoCapture video = new VideoCapture();
+	private VideoCapture video = null /*= new VideoCapture()*/;
 
 	private Mat frame = new Mat();
 	private Image fxImage = null;
@@ -92,7 +91,6 @@ public class VideoProcessor
 	private MatOfByte buffer = new MatOfByte();
 	private final MatOfInt params = new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, 20);
 
-
 	private final Size frameSize = new Size(640, 480);
 	private List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 	private List<MatOfInt> hullPoints = new ArrayList<MatOfInt>();
@@ -108,7 +106,9 @@ public class VideoProcessor
 	 */
 	public VideoProcessor()
 	{
+		System.out.println("VideoProcessorConstructor");
 		initControlPoints();
+		video = new VideoCapture();
 	}
 
 	public boolean isOpened()
