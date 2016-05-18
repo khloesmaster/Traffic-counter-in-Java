@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import hu.unideb.fksz.TrafficCounterLogger;
@@ -36,13 +35,11 @@ public class UserDAO {
 					.createQuery("Select u from User u where" + " user_name ='" + user.getName() + "'", User.class);
 			List<User> users = query.getResultList();
 
-			for (int i = 0; i < users.size(); ++i) {
-				System.out.println(users.get(i).getName() + " " + users.get(i).getPassword());
-			}
-			System.out.println("User:" + user.getName() + " " + user.getPassword());
 			if (users.size() > 0) {
 				if (users.get(0).getPassword().equals(user.getPassword())) {
 					if (users.get(0).getRole().equals(user.getRole())) {
+						user.setId(users.get(0).getId());
+						System.out.println("User:" + user.getName() + " " + user.getPassword() + " " + user.getId());
 						return true;
 					} else {
 						TrafficCounterLogger.warnMessage("User's role not correct!");
@@ -93,9 +90,7 @@ public class UserDAO {
 		try {
 			TypedQuery<User> monitorsQuery = entityManager
 					.createQuery("select u from User u where user_role='monitor'", User.class);
-
 			List<User> monitors = monitorsQuery.getResultList();
-			System.out.println(monitors.size());
 			return monitors;
 
 		} catch (Exception e) {

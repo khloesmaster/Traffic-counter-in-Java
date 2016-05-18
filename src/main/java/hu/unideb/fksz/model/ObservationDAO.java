@@ -44,18 +44,13 @@ public class ObservationDAO {
 	}
 
 	public static List<Observation> observationsOf(User user) {
-
 		Query monitorIdQuery = entityManager
-				.createQuery("select u from User u" + " WHERE USER_NAME='" + user.getName()+"'");
+				.createQuery("select u from User u" + " WHERE USER_NAME='" + user.getName() + "'");
 		int monitorId = ((User) monitorIdQuery.getSingleResult()).getId();
 
 		TypedQuery<Observation> observationsQuery = entityManager
-				.createQuery("select obs from Observation obs"
-						+ " where MONITOR_ID=" + monitorId, Observation.class);
+				.createQuery("select obs from Observation obs" + " where MONITOR_ID=" + monitorId, Observation.class);
 		List<Observation> observations = observationsQuery.getResultList();
-		for(Observation o: observations) {
-			System.out.println();
-		}
 		return observations;
 	}
 }

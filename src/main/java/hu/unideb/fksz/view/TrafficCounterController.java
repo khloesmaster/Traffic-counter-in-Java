@@ -22,11 +22,10 @@ package hu.unideb.fksz.view;
  * #L%
  */
 
-
-
 import hu.unideb.fksz.FileSaver;
 import hu.unideb.fksz.Main;
 import hu.unideb.fksz.VideoProcessor;
+import hu.unideb.fksz.model.Observation;
 import hu.unideb.fksz.model.ObservationDAO;
 import hu.unideb.fksz.model.User;
 import hu.unideb.fksz.model.UserDAO;
@@ -36,10 +35,13 @@ import hu.unideb.fksz.TrafficCounterLogger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -80,7 +82,6 @@ public class TrafficCounterController implements Initializable
 	private String lastVideoName;
 	private Point mousePosition = new Point();
 
-	private Stage stage;
 	private Timer timer = new Timer();
 	private List<String> items = new ArrayList<String>();
 	private List<String> results = new ArrayList<String>();
@@ -113,6 +114,19 @@ public class TrafficCounterController implements Initializable
 	private Button observationsButton;
 	@FXML
 	private Button logInButton;
+	@FXML
+	private Button increaseTrafficCountButton;
+	@FXML
+	private Label trafficCounterWindowTrafficCountLabel;
+
+	private int trafficCount;
+
+	@FXML
+	private void increaseTrafficCountButtonOnAction() {
+		setTrafficCount(getTrafficCount()+1);
+		trafficCounterWindowTrafficCountLabel.setText("Traffic count: "+
+				Integer.toString(trafficCount));
+	}
 
 	public User getLoggedUser() {
 		return loggedUser;
@@ -120,7 +134,19 @@ public class TrafficCounterController implements Initializable
 
 	public void setLoggedUser(User loggedUser) {
 		this.loggedUser = loggedUser;
+		System.out.println("User:" + loggedUser.getName() + " " + loggedUser.getPassword() + " " + loggedUser.getId());
+
 		setTitle("Traffic counter - " + loggedUser.getName() + "-"+ loggedUser.getRole());
+		observationsButton.setDisable(false);
+	}
+
+	@FXML
+	private void trafficCounterWindowAnchorPaneOnKeyPressed(KeyEvent event) {
+		if (event.getCode() == KeyCode.PLUS) {
+			trafficCount++;
+			trafficCounterWindowTrafficCountLabel.setText("Traffic count: "+
+					Integer.toString(trafficCount));
+		}
 	}
 
 	@FXML
@@ -168,7 +194,6 @@ public class TrafficCounterController implements Initializable
 
 	private void setTitle(String title) {
 		Stage stage;
-		Parent root;
 		stage = (Stage) logInButton.getScene().getWindow();
 		stage.setTitle(title);
 	}
@@ -236,7 +261,7 @@ public class TrafficCounterController implements Initializable
 				if (!otherFileSelected)
 					videoProcessor.setDetectedCarsCount(0);
 				addListViewItem(filename);
-
+				setTrafficCount(0);
 				return 0;
 			}
 		}
@@ -246,6 +271,14 @@ public class TrafficCounterController implements Initializable
 			return 1;
 		}
 		return 0;
+	}
+
+	public int getTrafficCount() {
+		return trafficCount;
+	}
+
+	public void setTrafficCount(int trafficCount) {
+		this.trafficCount = trafficCount;
 	}
 
 	/**
@@ -317,12 +350,20 @@ public class TrafficCounterController implements Initializable
 				otherFileSelected = false;
 				startButton.setText("Pause");
 				timer.cancel();
+				Observation currentObservation = new Observation();
+				currentObservation.setMonitor_id(getLoggedUser().getId());
+				currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
+				currentObservation.setTrafficCount(getTrafficCount());
+				currentObservation.setObservedVideoTitle(lastVideoName);
 
+				System.out.println(currentObservation.getMonitor_id() + " " + currentObservation.getObservedVideoTitle());
+				ObservationDAO.insertObservation(currentObservation);
 				results.add(lastVideoName + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
 						+ videoProcessor.getCarsPerMinute() + " cars per minute.");
 				listViewForResults.setItems(FXCollections.observableList(results) );
 
 				videoProcessor.setDetectedCarsCount(0);
+				setTrafficCount(0);
 				startProcessing();
 			}
 			else
@@ -444,17 +485,9 @@ public class TrafficCounterController implements Initializable
 			}
 
 		});
-
+		setTrafficCount(0);
 		TrafficCounterLogger.infoMessage("TrafficCounterController initialized!");
-	}
-
-	/**
-	 * Sets {@code stage}.
-	 * @param stage to be set.
-	 */
-	public void setStage(Stage stage)
-	{
-		this.stage = stage;
+		observationsButton.setDisable(true);
 	}
 
 	/**
@@ -501,7 +534,14 @@ public class TrafficCounterController implements Initializable
 						results.add(currentlyPlaying + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
 							+ videoProcessor.getCarsPerMinute() + " cars per minute.");
 						listViewForResults.setItems(FXCollections.observableList(results) );
+						Observation currentObservation = new Observation();
+						currentObservation.setMonitor_id(getLoggedUser().getId());
+						currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
+						currentObservation.setTrafficCount(getTrafficCount());
+						currentObservation.setObservedVideoTitle(lastVideoName);
 
+						ObservationDAO.insertObservation(currentObservation);
+						setTrafficCount(0);
 						videoProcessor.setDetectedCarsCount(0);
 						videoProcessor.setFinished(false);
 					}
