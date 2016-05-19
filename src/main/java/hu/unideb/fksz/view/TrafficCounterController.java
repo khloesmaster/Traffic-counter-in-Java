@@ -4,7 +4,7 @@ package hu.unideb.fksz.view;
  * #%L
  * Traffic-counter
  * %%
- * Copyright (C) 2015 FKSZSoft
+ * Copyright (C) 2016 FKSZSoft
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -58,11 +59,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
@@ -85,6 +90,7 @@ public class TrafficCounterController implements Initializable
 	private Timer timer = new Timer();
 	private List<String> items = new ArrayList<String>();
 	private List<String> results = new ArrayList<String>();
+	private List<Observation> userObservations;
 
 	private List<String> videoDetails = new ArrayList<String>();
 	private Map<String, String> itemsWithPath = new HashMap<String, String>();
@@ -117,15 +123,75 @@ public class TrafficCounterController implements Initializable
 	@FXML
 	private Button increaseTrafficCountButton;
 	@FXML
+	private Button commitResultsButton;
+	@FXML
+	private Button logOutButton;
+	@FXML
 	private Label trafficCounterWindowTrafficCountLabel;
-
 	private int trafficCount;
+	@FXML
+	private void commitResultsButtonClicked() {
+		commitResults();
+	}
+	@FXML
+	private void logOutButtonClicked() {
+		Alert logOutConfirmation = new Alert(AlertType.CONFIRMATION);
+		logOutConfirmation.setTitle("Log out confirmation");
+		logOutConfirmation.setHeaderText("Any uncommitted result will be lost if you log out");
+		logOutConfirmation.setContentText("Choose whether you want to log out or commit and log out");
+
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		ButtonType logOutButton = new ButtonType("Log out");
+		ButtonType commitAndLogOutButton = new ButtonType("Commit");
+
+		logOutConfirmation.getButtonTypes().setAll(logOutButton, commitAndLogOutButton, cancelButton);
+		Optional<ButtonType> dialogResult = logOutConfirmation.showAndWait();
+
+		if (dialogResult.get() == logOutButton) {
+			onlogOutConfirmationDialogLogOutResult();
+		} else if (dialogResult.get() == commitAndLogOutButton) {
+			onlogOutConfirmationDialogLogOutResult();
+			commitResults();
+		}
+	}
+
+	private void onlogOutConfirmationDialogLogOutResult() {
+		hideControls();
+		setLoggedUser(new User());
+		setTitle("Traffic counter - No user");
+	}
+
+	private void commitResults() {
+		for (Observation o : userObservations) {
+			ObservationDAO.insertObservation(o);
+		}
+	}
+
+	public void resetTitle() {
+		setTitle("Traffic counter - " + loggedUser.getName() + "-"+ loggedUser.getRole());
+	}
 
 	@FXML
 	private void increaseTrafficCountButtonOnAction() {
 		setTrafficCount(getTrafficCount()+1);
 		trafficCounterWindowTrafficCountLabel.setText("Traffic count: "+
 				Integer.toString(trafficCount));
+	}
+
+	public void hideControls() {
+		observationsButton.setVisible(false);
+		increaseTrafficCountButton.setVisible(false);
+		trafficCounterWindowTrafficCountLabel.setVisible(false);
+		logOutButton.setVisible(false);
+		commitResultsButton.setVisible(false);
+	}
+
+	public void showControls() {
+		observationsButton.setVisible(true);
+		increaseTrafficCountButton.setVisible(true);
+		trafficCounterWindowTrafficCountLabel.setVisible(true);
+		logOutButton.setVisible(true);
+		commitResultsButton.setVisible(true);
 	}
 
 	public User getLoggedUser() {
@@ -137,7 +203,8 @@ public class TrafficCounterController implements Initializable
 		System.out.println("User:" + loggedUser.getName() + " " + loggedUser.getPassword() + " " + loggedUser.getId());
 
 		setTitle("Traffic counter - " + loggedUser.getName() + "-"+ loggedUser.getRole());
-		observationsButton.setDisable(false);
+		showControls();
+		userObservations = new ArrayList<Observation>();
 	}
 
 	@FXML
@@ -197,6 +264,8 @@ public class TrafficCounterController implements Initializable
 		stage = (Stage) logInButton.getScene().getWindow();
 		stage.setTitle(title);
 	}
+
+
 
 	/**
 	 * Gets called when {@code listViewForFileNames} is clicked.
@@ -355,9 +424,8 @@ public class TrafficCounterController implements Initializable
 				currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
 				currentObservation.setTrafficCount(getTrafficCount());
 				currentObservation.setObservedVideoTitle(lastVideoName);
-
-				System.out.println(currentObservation.getMonitor_id() + " " + currentObservation.getObservedVideoTitle());
-				ObservationDAO.insertObservation(currentObservation);
+				currentObservation.setComputerTrafficCount(videoProcessor.getDetectedCarsCount());
+				userObservations.add(currentObservation);
 				results.add(lastVideoName + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
 						+ videoProcessor.getCarsPerMinute() + " cars per minute.");
 				listViewForResults.setItems(FXCollections.observableList(results) );
@@ -389,8 +457,6 @@ public class TrafficCounterController implements Initializable
 			pauseVideo = false;
 			this.startButton.setText("Pause");
 		}
-
-
 	}
 
 	/**
@@ -487,7 +553,7 @@ public class TrafficCounterController implements Initializable
 		});
 		setTrafficCount(0);
 		TrafficCounterLogger.infoMessage("TrafficCounterController initialized!");
-		observationsButton.setDisable(true);
+		hideControls();
 	}
 
 	/**
@@ -539,11 +605,12 @@ public class TrafficCounterController implements Initializable
 						currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
 						currentObservation.setTrafficCount(getTrafficCount());
 						currentObservation.setObservedVideoTitle(lastVideoName);
-
-						ObservationDAO.insertObservation(currentObservation);
+						currentObservation.setComputerTrafficCount(videoProcessor.getDetectedCarsCount());
+						userObservations.add(currentObservation);
 						setTrafficCount(0);
 						videoProcessor.setDetectedCarsCount(0);
 						videoProcessor.setFinished(false);
+						pauseVideo = true;
 					}
 					else
 					{

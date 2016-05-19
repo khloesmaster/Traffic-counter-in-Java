@@ -4,7 +4,7 @@ package hu.unideb.fksz;
  * #%L
  * Traffic-counter
  * %%
- * Copyright (C) 2015 FKSZSoft
+ * Copyright (C) 2016 FKSZSoft
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,7 +25,7 @@ package hu.unideb.fksz;
 
 import org.opencv.core.Core;
 
-import  hu.unideb.fksz.view.TrafficCounterController;
+import hu.unideb.fksz.view.TrafficCounterController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -45,7 +45,7 @@ public class Main extends Application
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 
-			primaryStage.setTitle("Traffic Counter");
+			primaryStage.setTitle("Traffic Counter - No user");
 			primaryStage.setScene(scene);
 			primaryStage.setResizable(false);
 			primaryStage.centerOnScreen();

@@ -5,19 +5,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="400.0" minWidth="400.0" prefHeight="478.0" prefWidth="675.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.AdminAccessController">
+<AnchorPane minHeight="400.0" minWidth="400.0" prefHeight="478.0" prefWidth="753.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.AdminAccessController">
    <children>
-      <ListView fx:id="adminAccessWindowListView" layoutX="528.0" layoutY="33.0" onMouseClicked="#onAdminAccessUsersListViewClicked" prefHeight="392.0" prefWidth="133.0" />
-      <TableView fx:id="adminAccessWindowTableView" layoutX="14.0" layoutY="34.0" prefHeight="392.0" prefWidth="503.0">
+      <ListView fx:id="adminAccessWindowListView" layoutX="606.0" layoutY="34.0" onMouseClicked="#onAdminAccessUsersListViewClicked" prefHeight="392.0" prefWidth="133.0" />
+      <TableView fx:id="adminAccessWindowTableView" layoutX="14.0" layoutY="34.0" prefHeight="392.0" prefWidth="587.0">
         <columns>
           <TableColumn fx:id="adminAccessObservationIdColumn" prefWidth="31.0" text="ID" />
-            <TableColumn fx:id="adminAccessVideoTitleColumn" prefWidth="186.0" text="Video title" />
-            <TableColumn fx:id="adminAccessTrafficCountColumn" prefWidth="100.0" text="Traffic count" />
-            <TableColumn fx:id="adminAccessDateColumn" prefWidth="185.0" text="Date" />
+            <TableColumn fx:id="adminAccessVideoTitleColumn" prefWidth="157.0" text="Video title" />
+            <TableColumn fx:id="adminAccessTrafficCountColumn" prefWidth="102.0" text="Traffic count" />
+            <TableColumn fx:id="adminAccessComputerTrafficCountColumn" prefWidth="126.0" text="Computer Count" />
+            <TableColumn fx:id="adminAccessDateColumn" prefWidth="170.0" text="Date" />
         </columns>
       </TableView>
       <Label layoutX="156.0" layoutY="14.0" text="Observations" />
-      <Label layoutX="576.0" layoutY="13.0" text="Users" />
-      <Button fx:id="adminAccessWindowBackButton" layoutX="564.0" layoutY="439.0" mnemonicParsing="false" onAction="#adminAccessWindowBackButtonOnAction" text="Back" />
+      <Label layoutX="654.0" layoutY="14.0" text="Users" />
+      <Button fx:id="adminAccessWindowBackButton" layoutX="642.0" layoutY="440.0" mnemonicParsing="false" onAction="#adminAccessWindowBackButtonOnAction" text="Back" />
    </children>
 </AnchorPane>

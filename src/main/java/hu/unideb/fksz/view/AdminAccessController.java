@@ -1,5 +1,27 @@
 package hu.unideb.fksz.view;
 
+/*
+ * #%L
+ * Traffic-counter
+ * %%
+ * Copyright (C) 2016 FKSZSoft
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -40,9 +62,12 @@ public class AdminAccessController implements Initializable {
 	@FXML
 	private TableColumn<Observation, Timestamp> adminAccessDateColumn;
 	@FXML
+	private TableColumn<Observation, Integer> adminAccessComputerTrafficCountColumn;
+	@FXML
 	private ListView<String> adminAccessWindowListView;
 	@FXML
 	private Button adminAccessWindowBackButton;
+	ObservableList<Observation> tableData = FXCollections.observableArrayList();
 
 	@FXML
 	private void adminAccessWindowBackButtonOnAction() {
@@ -50,7 +75,10 @@ public class AdminAccessController implements Initializable {
 			Stage stage;
 			Parent root;
 			stage = (Stage) adminAccessWindowBackButton.getScene().getWindow();
-			root = FXMLLoader.load(getClass().getResource("/fxml/TrafficCounterWindow.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TrafficCounterWindow.fxml"));
+			root = loader.load();
+			loader.<TrafficCounterController> getController().showControls();
+			//loader.<TrafficCounterController> getController().resetTitle();
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.show();
@@ -59,6 +87,7 @@ public class AdminAccessController implements Initializable {
 			TrafficCounterLogger.errorMessage(e.toString());
 		}
 	}
+
 	public void populateUserList() {
 		adminAccessWindowListView.setItems(UserDAO.usersString());
 		adminAccessWindowListView.getSelectionModel().select(0);
@@ -71,8 +100,6 @@ public class AdminAccessController implements Initializable {
 		populateObservationsTable(selectedUser);
 	}
 
-	ObservableList<Observation> tableData = FXCollections.observableArrayList();
-
 	public void populateObservationsTable(User user) {
 		List<Observation> observationsOfUser = ObservationDAO.observationsOf(user);
 		tableData = FXCollections.observableList(observationsOfUser);
@@ -82,19 +109,26 @@ public class AdminAccessController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		adminAccessDateColumn.setCellValueFactory(new PropertyValueFactory<Observation, Timestamp>("observationDate"));
+		adminAccessDateColumn
+				.setCellValueFactory(new PropertyValueFactory<Observation, Timestamp>("observationDate"));
 		adminAccessObservationIdColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("observationId"));
 		adminAccessVideoTitleColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, String>("observedVideoTitle"));
 		adminAccessTrafficCountColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("trafficCount"));
+		adminAccessComputerTrafficCountColumn
+		.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("computerTrafficCount"));
 
+		adminAccessComputerTrafficCountColumn.setEditable(false);
+		adminAccessTrafficCountColumn.setEditable(false);
+		adminAccessVideoTitleColumn.setEditable(false);
+		adminAccessObservationIdColumn.setEditable(false);
+		adminAccessDateColumn.setEditable(false);
 	}
 
 	@FXML
 	public void onAdminAccessUsersListViewClicked() {
 		populateTable();
 	}
-
 }
