@@ -49,7 +49,6 @@ public class User {
 	@Column(name = "user_role")
 	private String role;
 
-
 	@Override
 	public String toString() {
 		return getName();

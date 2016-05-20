@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -76,8 +75,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-public class TrafficCounterController implements Initializable
-{
+public class TrafficCounterController implements Initializable {
 
 	private VideoProcessor videoProcessor = new VideoProcessor();
 	private boolean pauseVideo = false;
@@ -113,7 +111,7 @@ public class TrafficCounterController implements Initializable
 	@FXML
 	private ListView<String> listViewForVideoDetails;
 	@FXML
-	private AnchorPane root = new AnchorPane();
+	private AnchorPane root;
 	@FXML
 	private ProgressBar progressBar;
 	@FXML
@@ -129,10 +127,50 @@ public class TrafficCounterController implements Initializable
 	@FXML
 	private Label trafficCounterWindowTrafficCountLabel;
 	private int trafficCount;
+	private boolean firstLogin;
+	private boolean firstObservation;
+	private Scene logInScene;
+	private Scene trafficCounterScene;
+	private Scene observationsScene;
+	private Stage trafficCounterStage;
+
+	public Scene getTrafficCounterScene() {
+		return trafficCounterScene;
+	}
+
+	public void setTrafficCounterScene(Scene trafficCounterScene) {
+		this.trafficCounterScene = trafficCounterScene;
+	}
+
+	public Scene getLogInScene() {
+		return logInScene;
+	}
+
+	public void setLogInScene(Scene logInScene) {
+		this.logInScene = logInScene;
+	}
+
+	public Scene getObservationsScene() {
+		return observationsScene;
+	}
+
+	public void setObservationsScene(Scene observationsScene) {
+		this.observationsScene = observationsScene;
+	}
+
+	public Stage getTrafficCounterStage() {
+		return trafficCounterStage;
+	}
+
+	public void setTrafficCounterStage(Stage trafficCounterStage) {
+		this.trafficCounterStage = trafficCounterStage;
+	}
+
 	@FXML
 	private void commitResultsButtonClicked() {
 		commitResults();
 	}
+
 	@FXML
 	private void logOutButtonClicked() {
 		Alert logOutConfirmation = new Alert(AlertType.CONFIRMATION);
@@ -148,11 +186,24 @@ public class TrafficCounterController implements Initializable
 		Optional<ButtonType> dialogResult = logOutConfirmation.showAndWait();
 
 		if (dialogResult.get() == logOutButton) {
+			getTrafficCounterStage().setScene(getLogInScene());
 			onlogOutConfirmationDialogLogOutResult();
+			getTrafficCounterStage().setScene(getTrafficCounterScene());
+			TrafficCounterLogger.infoMessage("Logging out..");
+			getTrafficCounterStage().show();
 		} else if (dialogResult.get() == commitAndLogOutButton) {
 			onlogOutConfirmationDialogLogOutResult();
 			commitResults();
+			TrafficCounterLogger.infoMessage("Committing and logging out..");
 		}
+	}
+
+	public AnchorPane getRoot() {
+		return root;
+	}
+
+	public void setRoot(AnchorPane root) {
+		this.root = root;
 	}
 
 	private void onlogOutConfirmationDialogLogOutResult() {
@@ -168,14 +219,13 @@ public class TrafficCounterController implements Initializable
 	}
 
 	public void resetTitle() {
-		setTitle("Traffic counter - " + loggedUser.getName() + "-"+ loggedUser.getRole());
+		setTitle("Traffic counter - " + loggedUser.getName() + "-" + loggedUser.getRole());
 	}
 
 	@FXML
 	private void increaseTrafficCountButtonOnAction() {
-		setTrafficCount(getTrafficCount()+1);
-		trafficCounterWindowTrafficCountLabel.setText("Traffic count: "+
-				Integer.toString(trafficCount));
+		setTrafficCount(getTrafficCount() + 1);
+		trafficCounterWindowTrafficCountLabel.setText("Traffic count: " + Integer.toString(trafficCount));
 	}
 
 	public void hideControls() {
@@ -200,9 +250,7 @@ public class TrafficCounterController implements Initializable
 
 	public void setLoggedUser(User loggedUser) {
 		this.loggedUser = loggedUser;
-		System.out.println("User:" + loggedUser.getName() + " " + loggedUser.getPassword() + " " + loggedUser.getId());
-
-		setTitle("Traffic counter - " + loggedUser.getName() + "-"+ loggedUser.getRole());
+		setTitle("Traffic counter - " + loggedUser.getName() + "-" + loggedUser.getRole());
 		showControls();
 		userObservations = new ArrayList<Observation>();
 	}
@@ -211,77 +259,85 @@ public class TrafficCounterController implements Initializable
 	private void trafficCounterWindowAnchorPaneOnKeyPressed(KeyEvent event) {
 		if (event.getCode() == KeyCode.PLUS) {
 			trafficCount++;
-			trafficCounterWindowTrafficCountLabel.setText("Traffic count: "+
-					Integer.toString(trafficCount));
+			trafficCounterWindowTrafficCountLabel.setText("Traffic count: " + Integer.toString(trafficCount));
 		}
 	}
 
 	@FXML
 	private void logInButtonClicked() {
-		try {
-			Stage stage;
-			Parent root;
-			stage = (Stage) logInButton.getScene().getWindow();
-			root = FXMLLoader.load(getClass().getResource("/fxml/LogInWindow.fxml"));
-
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.show();
-		} catch (IOException e) {
-			TrafficCounterLogger.errorMessage(e.toString());
+		if (!firstLogin) {
+			try {
+				firstLogin = true;
+				Stage stage;
+				Parent root;
+				stage = (Stage) logInButton.getScene().getWindow();
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogInWindow.fxml"));
+				root = loader.load();
+				Scene scene = new Scene(root);
+				stage.setTitle("Log in");
+				stage.setScene(scene);
+				loader.<LogInController> getController().setTrafficCounterController(this);
+				setLogInScene(scene);
+				stage.show();
+			} catch (IOException e) {
+				TrafficCounterLogger.errorMessage(e.toString());
+			}
+		} else {
+			getTrafficCounterStage().setScene(getLogInScene());
+			getTrafficCounterStage().setTitle("Log in");
+			getTrafficCounterStage().show();
 		}
 	}
 
 	@FXML
 	private void observationsButtonClicked() {
-		try {
-			Stage stage;
-			Parent root;
-			Scene scene = null;
-			FXMLLoader loader;
-			stage = (Stage) logInButton.getScene().getWindow();
-			if (getLoggedUser().getRole().equals(UserDAO.ADMIN_ROLE)) {
-				loader = new FXMLLoader(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
-				root = loader.load();
-				scene = new Scene(root);
-				loader.<AdminAccessController>getController().populateUserList();
-			} else if (getLoggedUser().getRole().equals(UserDAO.MONITOR_ROLE)) {
-				loader = new FXMLLoader(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
-				root = loader.load();
-				scene = new Scene(root);
-				setTitle("Observations of "+ loggedUser.getName());
-				loader.<MonitorAccessController>getController().populateObservationsTable(loggedUser);
+		if (!firstObservation) {
+			try {
+				firstObservation = true;
+				Stage stage;
+				Parent root;
+				Scene scene = null;
+				FXMLLoader loader;
+				stage = (Stage) logInButton.getScene().getWindow();
+				if (getLoggedUser().getRole().equals(UserDAO.ADMIN_ROLE)) {
+					loader = new FXMLLoader(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
+					root = loader.load();
+					scene = new Scene(root);
+					loader.<AdminAccessController> getController().populateUserList();
+					loader.<AdminAccessController> getController().setTrafficCounterController(this);
+				} else if (getLoggedUser().getRole().equals(UserDAO.MONITOR_ROLE)) {
+					loader = new FXMLLoader(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
+					root = loader.load();
+					scene = new Scene(root);
+					setTitle("Observations of " + loggedUser.getName());
+					loader.<MonitorAccessController> getController().populateObservationsTable(loggedUser);
+					loader.<MonitorAccessController> getController().setTrafficCounterController(this);
+				}
+				stage.setScene(scene);
+				stage.show();
+			} catch (IOException e) {
+				TrafficCounterLogger.errorMessage(e.toString());
 			}
-			stage.setScene(scene);
-			stage.show();
-		} catch (IOException e) {
-			TrafficCounterLogger.errorMessage(e.toString());
+		} else {
+			getTrafficCounterStage().setScene(getObservationsScene());
+			getTrafficCounterStage().show();
 		}
 	}
 
 	private void setTitle(String title) {
-		Stage stage;
-		stage = (Stage) logInButton.getScene().getWindow();
-		stage.setTitle(title);
+		getTrafficCounterStage().setTitle(title);
 	}
-
-
 
 	/**
 	 * Gets called when {@code listViewForFileNames} is clicked.
 	 */
 	@FXML
-	private void listViewForFileNamesClicked()
-	{
-		if (!listViewForFileNames.getSelectionModel().getSelectedItem().equals(currentlyPlaying))
-		{
+	private void listViewForFileNamesClicked() {
+		if (!listViewForFileNames.getSelectionModel().getSelectedItem().equals(currentlyPlaying)) {
 			startButton.setText("Start");
 			otherFileSelected = true;
-		}
-		else
-		{
-			if (!pauseVideo)
-			{
+		} else {
+			if (!pauseVideo) {
 				startButton.setText("Pause");
 			}
 			otherFileSelected = false;
@@ -289,53 +345,47 @@ public class TrafficCounterController implements Initializable
 	}
 
 	/**
-	 * Tries to load a video, returns whether the {@code VideoProcessor} successfully loaded the video or not.
+	 * Tries to load a video, returns whether the {@code VideoProcessor}
+	 * successfully loaded the video or not.
 	 *
-	 * @param filename 	the absolute path of the video to be loaded.
-	 * @return 	whether the {@code VideoProcessor} successfully loaded the video or not.
+	 * @param filename
+	 *            the absolute path of the video to be loaded.
+	 * @return whether the {@code VideoProcessor} successfully loaded the video
+	 *         or not.
 	 */
-	public int loadVideo(String filename)
-	{
-		if (filename != null)
-		{
-			if ( videoProcessor.initVideo(filename) == 0)
-			{
+	public int loadVideo(String filename) {
+		if (filename != null) {
+			if (videoProcessor.initVideo(filename) == 0) {
 
 				this.imageView.setImage(videoProcessor.getImageAtPos(1));
 
-				TrafficCounterLogger.infoMessage("Video "+ filename + " loaded!");
-				if (this.saveImageButton.disableProperty().get() == true)
-				{
+				TrafficCounterLogger.infoMessage("Video " + filename + " loaded!");
+				if (this.saveImageButton.disableProperty().get() == true) {
 					this.saveImageButton.disableProperty().set(false);
 					this.startButton.disableProperty().set(false);
 				}
 
-				if (!videoDetails.isEmpty())
-				{
+				if (!videoDetails.isEmpty()) {
 					videoDetails.clear();
 				}
 				videoDetails.add("Video name: " + FileNameParser.getFileName(filename));
-				videoDetails.add("City: " +       FileNameParser.getCity(filename));
-				videoDetails.add("Street: " +     FileNameParser.getStreet(filename));
-				videoDetails.add("Length: " +     videoProcessor.getLengthFormatted());
-				videoDetails.add("FPS: " +        (int)videoProcessor.getFPS());
-				videoDetails.add("Frame count: "+ videoProcessor.getFrameCount());
-				videoDetails.add("Extension: " +  FileNameParser.getExtension(filename));
+				videoDetails.add("City: " + FileNameParser.getCity(filename));
+				videoDetails.add("Street: " + FileNameParser.getStreet(filename));
+				videoDetails.add("Length: " + videoProcessor.getLengthFormatted());
+				videoDetails.add("FPS: " + (int) videoProcessor.getFPS());
+				videoDetails.add("Frame count: " + videoProcessor.getFrameCount());
+				videoDetails.add("Extension: " + FileNameParser.getExtension(filename));
 
-				listViewForVideoDetails.setItems(FXCollections.observableList(videoDetails) );
+				listViewForVideoDetails.setItems(FXCollections.observableList(videoDetails));
 
-
-				currentlyPlaying = FileNameParser.getCity(filename) +
-						   " - " + FileNameParser.getStreet(filename);
+				currentlyPlaying = FileNameParser.getCity(filename) + " - " + FileNameParser.getStreet(filename);
 				if (!otherFileSelected)
 					videoProcessor.setDetectedCarsCount(0);
 				addListViewItem(filename);
 				setTrafficCount(0);
 				return 0;
 			}
-		}
-		else if (filename == null)
-		{
+		} else if (filename == null) {
 			TrafficCounterLogger.warnMessage("No file was selected!");
 			return 1;
 		}
@@ -351,15 +401,13 @@ public class TrafficCounterController implements Initializable
 	}
 
 	/**
-	 * Gets called when the {@code loadButton} is clicked.
-	 * Pauses the video while the file is being selected, if it was playing.
-	 * Calls {@code loadVideo()} to load the selected file.
+	 * Gets called when the {@code loadButton} is clicked. Pauses the video
+	 * while the file is being selected, if it was playing. Calls
+	 * {@code loadVideo()} to load the selected file.
 	 */
 	@FXML
-	private void loadButtonClicked()
-	{
-		if (!pauseVideo)
-		{
+	private void loadButtonClicked() {
+		if (!pauseVideo) {
 			pauseVideo = true;
 			this.startButton.setText("Start");
 		}
@@ -371,51 +419,41 @@ public class TrafficCounterController implements Initializable
 	 * Gets called when the {@code saveImageButton} is clicked.
 	 */
 	@FXML
-	private void saveImageClicked()
-	{
+	private void saveImageClicked() {
 		TrafficCounterLogger.infoMessage("Saving image..");
-		if (!pauseVideo)
-		{
+		if (!pauseVideo) {
 			pauseVideo = true;
 			startButton.setText("Start");
 		}
 
 		String filename = new FileSaver().getFileName((Stage) this.saveImageButton.getScene().getWindow());
-		if (filename != null)
-		{
-			try
-			{
-				Imgcodecs.imwrite(filename, videoProcessor.getFrame() );
-			}
-			catch (Exception ex)
-			{
+		if (filename != null) {
+			try {
+				Imgcodecs.imwrite(filename, videoProcessor.getFrame());
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			pauseVideo = false;
 			startButton.setText("Pause");
-		}
-		else
-		{
+		} else {
 			TrafficCounterLogger.errorMessage("File name was not specified, file was not saved!");
 			pauseVideo = false;
 		}
 	}
 
 	/**
-	 * Gets called when the {@code startButton} is clicked.
-	 * Starts or pauses/ unpauses the video, or loads a new video if other than the
-	 * currently playing video is selected from the {@code listViewForFileNames}
+	 * Gets called when the {@code startButton} is clicked. Starts or pauses/
+	 * unpauses the video, or loads a new video if other than the currently
+	 * playing video is selected from the {@code listViewForFileNames}
 	 */
 	@FXML
-	private void startButtonClicked()
-	{
-		if (otherFileSelected)
-		{
+	private void startButtonClicked() {
+		if (otherFileSelected) {
 			pauseVideo = true;
 
-			if (loadVideo(itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get())) == 0)
-			{
-				//pauseVideo = true;
+			if (loadVideo(
+					itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get())) == 0) {
+				// pauseVideo = true;
 				otherFileSelected = false;
 				startButton.setText("Pause");
 				timer.cancel();
@@ -428,73 +466,54 @@ public class TrafficCounterController implements Initializable
 				userObservations.add(currentObservation);
 				results.add(lastVideoName + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
 						+ videoProcessor.getCarsPerMinute() + " cars per minute.");
-				listViewForResults.setItems(FXCollections.observableList(results) );
+				listViewForResults.setItems(FXCollections.observableList(results));
 
 				videoProcessor.setDetectedCarsCount(0);
 				setTrafficCount(0);
 				startProcessing();
-			}
-			else
-			{
-				TrafficCounterLogger.errorMessage("Failed to load " + itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get()));
+			} else {
+				TrafficCounterLogger.errorMessage("Failed to load "
+						+ itemsWithPath.get(listViewForFileNames.getSelectionModel().selectedItemProperty().get()));
 			}
 		}
 
-		if (!startButtonClicked && pauseVideo)
-		{
+		if (!startButtonClicked && pauseVideo) {
 			startButtonClicked = true;
 			pauseVideo = false;
 			this.startButton.setText("Pause");
 			startProcessing();
-		}
-		else if ( !pauseVideo )
-		{
+		} else if (!pauseVideo) {
 			pauseVideo = true;
 			this.startButton.setText("Start");
-		}
-		else if (pauseVideo)
-		{
+		} else if (pauseVideo) {
 			pauseVideo = false;
 			this.startButton.setText("Pause");
 		}
 	}
 
 	/**
-	 * Gets called when {@code imageView} is clicked.
-	 * Pauses or unpauses the video.
+	 * Gets called when {@code imageView} is clicked. Pauses or unpauses the
+	 * video.
 	 */
 	@FXML
-	private void imageViewClicked()
-	{
-		/*if (startButtonClicked)
-		{
-			if (!mouseDragged)
-
-			if (!pauseVideo)
-			{
-				pauseVideo = true;
-				this.startButton.setText("Start");
-			}
-			else if (pauseVideo)
-			{
-				this.startButton.setText("Pause");
-				pauseVideo = false;
-			}
-		}*/
+	private void imageViewClicked() {
+		/*
+		 * if (startButtonClicked) { if (!mouseDragged)
+		 *
+		 * if (!pauseVideo) { pauseVideo = true;
+		 * this.startButton.setText("Start"); } else if (pauseVideo) {
+		 * this.startButton.setText("Pause"); pauseVideo = false; } }
+		 */
 	}
 
 	/**
 	 * Initializes some elements of the user interface.
 	 */
-	private void init()
-	{
-		try
-		{
+	private void init() {
+		try {
 			this.imageView.setImage(new Image(Main.class.getClass().getResource("/image/load_video.jpg").toString()));
 			TrafficCounterLogger.traceMessage("Initial picture loaded successfully!");
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			TrafficCounterLogger.errorMessage("Initial picture failed to load!");
 		}
 
@@ -505,11 +524,9 @@ public class TrafficCounterController implements Initializable
 
 		EventHandler<InputEvent> eventHandler = event -> {
 
-			if (event.getEventType().equals(KeyEvent.KEY_PRESSED))
-			{
+			if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
 				KeyEvent keyevent = (KeyEvent) event.clone();
-				if (keyevent.getCode().equals(KeyCode.ESCAPE))
-				{
+				if (keyevent.getCode().equals(KeyCode.ESCAPE)) {
 					timer.cancel();
 					videoProcessor.getVideoCap().release();
 					((Node) (event.getSource())).getScene().getWindow().hide();
@@ -525,28 +542,25 @@ public class TrafficCounterController implements Initializable
 			mousePosition.x = event.getX();
 			mousePosition.y = event.getY();
 
-			if (mousePosition.inside(videoProcessor.getImageArea()))
-			{
-				videoProcessor.setPreviousControlPointsHeight((int)videoProcessor.getHeightOfAControlPoint());
+			if (mousePosition.inside(videoProcessor.getImageArea())) {
+				videoProcessor.setPreviousControlPointsHeight((int) videoProcessor.getHeightOfAControlPoint());
 			}
 
 		});
 
 		imageView.setOnMouseDragged(event -> {
 
-			if (mousePosition.inside(videoProcessor.getImageArea()) )
-			{
+			if (mousePosition.inside(videoProcessor.getImageArea())) {
 				Point relativeMousePosition = new Point(mousePosition.x - event.getX(), mousePosition.y - event.getY());
-				videoProcessor.setHeightOfTheControlPoints(videoProcessor.getPreviousControlPointsHeight() - relativeMousePosition.y);
+				videoProcessor.setHeightOfTheControlPoints(
+						videoProcessor.getPreviousControlPointsHeight() - relativeMousePosition.y);
 			}
 
-			if (videoProcessor.getHeightOfAControlPoint() < 100)
-			{
+			if (videoProcessor.getHeightOfAControlPoint() < 100) {
 				videoProcessor.setHeightOfTheControlPoints(100);
 			}
 
-			if (videoProcessor.getHeightOfAControlPoint() > videoProcessor.getImageArea().height - 100)
-			{
+			if (videoProcessor.getHeightOfAControlPoint() > videoProcessor.getImageArea().height - 100) {
 				videoProcessor.setHeightOfTheControlPoints(videoProcessor.getImageArea().height - 100);
 			}
 
@@ -557,49 +571,42 @@ public class TrafficCounterController implements Initializable
 	}
 
 	/**
-	 * Adds an item to the {@code listViewForFileNames} {@code ListView} and
-	 * to {@code items} and {@code itemsWithPath} if it's not containing it.
+	 * Adds an item to the {@code listViewForFileNames} {@code ListView} and to
+	 * {@code items} and {@code itemsWithPath} if it's not containing it.
 	 *
-	 * @param filename	path to be added to the {@code itemsWithPath}.
+	 * @param filename
+	 *            path to be added to the {@code itemsWithPath}.
 	 */
-	private void addListViewItem(String filename)
-	{
-		if (items != null)
-		{
-			if (!items.contains(currentlyPlaying) && filename!= null)
-			{
+	private void addListViewItem(String filename) {
+		if (items != null) {
+			if (!items.contains(currentlyPlaying) && filename != null) {
 				items.add(currentlyPlaying);
-				itemsWithPath.put(currentlyPlaying,
-								  filename);
+				itemsWithPath.put(currentlyPlaying, filename);
 			}
-			listViewForFileNames.selectionModelProperty().get().select(currentlyPlaying);;
-			listViewForFileNames.setItems(FXCollections.observableList(items) );
+			listViewForFileNames.selectionModelProperty().get().select(currentlyPlaying);
+			;
+			listViewForFileNames.setItems(FXCollections.observableList(items));
 		}
 	}
 
 	/**
 	 * Main loop, separately in a {@code Timer} thread.
 	 */
-	private void startProcessing()
-	{
-		TimerTask frame_grabber = new TimerTask()
-		{
+	private void startProcessing() {
+		TimerTask frame_grabber = new TimerTask() {
 			@Override
-			public void run()
-			{
-				if (!pauseVideo)
-				{
+			public void run() {
+				if (!pauseVideo) {
 					videoProcessor.processVideo();
 					videoProcessor.writeOnFrame("Detected cars count: " + videoProcessor.getDetectedCarsCount());
 
 					Image tmp = videoProcessor.convertCvMatToImage();
 					progressBar.setProgress(videoProcessor.getFramePos() / videoProcessor.getFrameCount());
 
-					if (videoProcessor.isFinished())
-					{
+					if (videoProcessor.isFinished()) {
 						results.add(currentlyPlaying + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
-							+ videoProcessor.getCarsPerMinute() + " cars per minute.");
-						listViewForResults.setItems(FXCollections.observableList(results) );
+								+ videoProcessor.getCarsPerMinute() + " cars per minute.");
+						listViewForResults.setItems(FXCollections.observableList(results));
 						Observation currentObservation = new Observation();
 						currentObservation.setMonitor_id(getLoggedUser().getId());
 						currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
@@ -611,9 +618,7 @@ public class TrafficCounterController implements Initializable
 						videoProcessor.setDetectedCarsCount(0);
 						videoProcessor.setFinished(false);
 						pauseVideo = true;
-					}
-					else
-					{
+					} else {
 
 					}
 					Platform.runLater(() -> imageView.setImage(tmp));

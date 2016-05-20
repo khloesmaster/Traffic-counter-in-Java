@@ -22,13 +22,11 @@ package hu.unideb.fksz.view;
  * #L%
  */
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import hu.unideb.fksz.TrafficCounterLogger;
 import hu.unideb.fksz.model.Observation;
 import hu.unideb.fksz.model.ObservationDAO;
 import hu.unideb.fksz.model.User;
@@ -36,16 +34,15 @@ import hu.unideb.fksz.model.UserDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 public class AdminAccessController implements Initializable {
 
@@ -68,24 +65,22 @@ public class AdminAccessController implements Initializable {
 	@FXML
 	private Button adminAccessWindowBackButton;
 	ObservableList<Observation> tableData = FXCollections.observableArrayList();
+	private TrafficCounterController trafficCounterController;
+
+	public TrafficCounterController getTrafficCounterController() {
+		return trafficCounterController;
+	}
+
+	public void setTrafficCounterController(TrafficCounterController trafficCounterController) {
+		this.trafficCounterController = trafficCounterController;
+	}
 
 	@FXML
 	private void adminAccessWindowBackButtonOnAction() {
-		try {
-			Stage stage;
-			Parent root;
-			stage = (Stage) adminAccessWindowBackButton.getScene().getWindow();
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TrafficCounterWindow.fxml"));
-			root = loader.load();
-			loader.<TrafficCounterController> getController().showControls();
-			//loader.<TrafficCounterController> getController().resetTitle();
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.show();
-
-		} catch (IOException e) {
-			TrafficCounterLogger.errorMessage(e.toString());
-		}
+		getTrafficCounterController().getTrafficCounterStage()
+				.setScene(getTrafficCounterController().getTrafficCounterScene());
+		getTrafficCounterController().resetTitle();
+		getTrafficCounterController().getTrafficCounterStage().show();
 	}
 
 	public void populateUserList() {
@@ -109,8 +104,7 @@ public class AdminAccessController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		adminAccessDateColumn
-				.setCellValueFactory(new PropertyValueFactory<Observation, Timestamp>("observationDate"));
+		adminAccessDateColumn.setCellValueFactory(new PropertyValueFactory<Observation, Timestamp>("observationDate"));
 		adminAccessObservationIdColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("observationId"));
 		adminAccessVideoTitleColumn
@@ -118,13 +112,32 @@ public class AdminAccessController implements Initializable {
 		adminAccessTrafficCountColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("trafficCount"));
 		adminAccessComputerTrafficCountColumn
-		.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("computerTrafficCount"));
+				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("computerTrafficCount"));
 
 		adminAccessComputerTrafficCountColumn.setEditable(false);
 		adminAccessTrafficCountColumn.setEditable(false);
 		adminAccessVideoTitleColumn.setEditable(false);
 		adminAccessObservationIdColumn.setEditable(false);
 		adminAccessDateColumn.setEditable(false);
+
+		adminAccessWindowListView.setEditable(false);
+		adminAccessWindowListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+		ContextMenu usersListContextMenu = new ContextMenu();
+		MenuItem deleteUserMenuItem = new MenuItem();
+		deleteUserMenuItem.setText("Delete");
+		deleteUserMenuItem.setOnAction(action -> {
+			if (adminAccessWindowListView.getSelectionModel().getSelectedIndex() != -1) {
+				User user = new User();
+				user.setName(adminAccessWindowListView.getSelectionModel().getSelectedItem());
+				UserDAO.removeUser(user);
+			}
+		});
+		MenuItem registerUserMenuItem = new MenuItem();
+		registerUserMenuItem.setText("New user");
+
+		usersListContextMenu.getItems().addAll(deleteUserMenuItem, registerUserMenuItem);
+		adminAccessWindowListView.setContextMenu(usersListContextMenu);
 	}
 
 	@FXML

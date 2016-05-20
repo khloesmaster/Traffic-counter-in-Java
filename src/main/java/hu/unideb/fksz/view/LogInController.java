@@ -22,7 +22,6 @@ package hu.unideb.fksz.view;
  * #L%
  */
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,18 +29,13 @@ import hu.unideb.fksz.TrafficCounterLogger;
 import hu.unideb.fksz.model.User;
 import hu.unideb.fksz.model.UserDAO;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.stage.Stage;
 
 public class LogInController implements Initializable {
 
@@ -58,19 +52,19 @@ public class LogInController implements Initializable {
 	@FXML
 	private Label wrongPasswordLabel;
 
+	private TrafficCounterController trafficCounterController;
+
+	public TrafficCounterController getTrafficCounterController() {
+		return trafficCounterController;
+	}
+	public void setTrafficCounterController(TrafficCounterController trafficCounterController) {
+		this.trafficCounterController = trafficCounterController;
+	}
 	@FXML
 	private void logInWindowBackButtonClicked() {
-		try {
-			Stage stage;
-			Parent root;
-			stage = (Stage) logInWindowLogInButton.getScene().getWindow();
-			root = FXMLLoader.load(getClass().getResource("/fxml/TrafficCounterWindow.fxml"));
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.show();
-		} catch (IOException e) {
-			TrafficCounterLogger.errorMessage(e.toString());
-		}
+		getTrafficCounterController().getTrafficCounterStage().setScene(
+				getTrafficCounterController().getTrafficCounterScene());
+		getTrafficCounterController().getTrafficCounterStage().show();
 	}
 
 	@FXML
@@ -84,21 +78,10 @@ public class LogInController implements Initializable {
 			user.setRole("monitor");
 		}
 		if (UserDAO.logInUser(user)) {
-			try {
-				Stage stage;
-				Parent root;
-				stage = (Stage) logInWindowLogInButton.getScene().getWindow();
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TrafficCounterWindow.fxml"));
-				root = loader.load();
-
-				Scene scene = new Scene(root);
-				stage.setScene(scene);
-				loader.<TrafficCounterController> getController().setLoggedUser(user);
-				stage.show();
-
-			} catch (IOException e) {
-				TrafficCounterLogger.errorMessage(e.toString());
-			}
+			getTrafficCounterController().setLoggedUser(user);
+			getTrafficCounterController().getTrafficCounterStage().setScene(
+					getTrafficCounterController().getTrafficCounterScene());
+			getTrafficCounterController().getTrafficCounterStage().show();
 		} else {
 			wrongPasswordLabel.setVisible(true);
 			wrongPasswordLabel.setText("Wrong username/password/role");

@@ -22,28 +22,22 @@ package hu.unideb.fksz.view;
  * #L%
  */
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import hu.unideb.fksz.TrafficCounterLogger;
 import hu.unideb.fksz.model.Observation;
 import hu.unideb.fksz.model.ObservationDAO;
 import hu.unideb.fksz.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 public class MonitorAccessController implements Initializable {
 
@@ -61,27 +55,24 @@ public class MonitorAccessController implements Initializable {
 	private TableColumn<Observation, Integer> monitorAccessComputerTrafficCountColumn;
 	@FXML
 	private Button monitorAccessWindowBackButton;
+	private TrafficCounterController trafficCounterController;
+	ObservableList<Observation> tableData = FXCollections.observableArrayList();
+
+	public TrafficCounterController getTrafficCounterController() {
+		return trafficCounterController;
+	}
+
+	public void setTrafficCounterController(TrafficCounterController trafficCounterController) {
+		this.trafficCounterController = trafficCounterController;
+	}
 
 	@FXML
 	private void monitorAccessWindowBackButtonOnAction() {
-		try {
-			Stage stage;
-			Parent root;
-			stage = (Stage) monitorAccessWindowBackButton.getScene().getWindow();
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TrafficCounterWindow.fxml"));
-			root = loader.load();
-			loader.<TrafficCounterController>getController().showControls();
-			loader.<TrafficCounterController>getController().resetTitle();
-
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.show();
-
-		} catch (IOException e) {
-			TrafficCounterLogger.errorMessage(e.toString());
-		}
+		getTrafficCounterController().getTrafficCounterStage()
+				.setScene(getTrafficCounterController().getTrafficCounterScene());
+		getTrafficCounterController().resetTitle();
+		getTrafficCounterController().getTrafficCounterStage().show();
 	}
-	ObservableList<Observation> tableData = FXCollections.observableArrayList();
 
 	public void populateObservationsTable(User user) {
 		List<Observation> observations = ObservationDAO.observationsOf(user);
@@ -92,14 +83,14 @@ public class MonitorAccessController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		monitorAccessDateColumn.setCellValueFactory(
-				new PropertyValueFactory<Observation, Timestamp>("observationDate"));
-		monitorAccessObservationIdColumn.setCellValueFactory(
-				new PropertyValueFactory<Observation, Integer>("observationId"));
-		monitorAccessVideoTitleColumn.setCellValueFactory(
-				new PropertyValueFactory<Observation, String>("observedVideoTitle"));
-		monitorAccessTrafficCountColumn.setCellValueFactory(
-				new PropertyValueFactory<Observation, Integer>("trafficCount"));
+		monitorAccessDateColumn
+				.setCellValueFactory(new PropertyValueFactory<Observation, Timestamp>("observationDate"));
+		monitorAccessObservationIdColumn
+				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("observationId"));
+		monitorAccessVideoTitleColumn
+				.setCellValueFactory(new PropertyValueFactory<Observation, String>("observedVideoTitle"));
+		monitorAccessTrafficCountColumn
+				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("trafficCount"));
 		monitorAccessComputerTrafficCountColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("computerTrafficCount"));
 
@@ -109,5 +100,4 @@ public class MonitorAccessController implements Initializable {
 		monitorAccessObservationIdColumn.setEditable(false);
 		monitorAccessDateColumn.setEditable(false);
 	}
-
 }

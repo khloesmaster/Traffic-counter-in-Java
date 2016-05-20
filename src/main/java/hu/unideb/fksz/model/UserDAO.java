@@ -95,6 +95,7 @@ public class UserDAO {
 	}
 
 	public static void removeUser(User user) {
+		//TODO SELECT USER
 		entityManager.getTransaction().begin();
 		if (entityManager.contains(user)) {
 			if (!user.getRole().equals("admin")) {

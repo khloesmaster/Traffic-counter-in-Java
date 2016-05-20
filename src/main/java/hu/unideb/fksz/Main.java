@@ -31,8 +31,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-
 
 public class Main extends Application
 {
@@ -47,6 +45,8 @@ public class Main extends Application
 
 			primaryStage.setTitle("Traffic Counter - No user");
 			primaryStage.setScene(scene);
+			loader.<TrafficCounterController>getController().setTrafficCounterStage(primaryStage);
+			loader.<TrafficCounterController>getController().setTrafficCounterScene(scene);
 			primaryStage.setResizable(false);
 			primaryStage.centerOnScreen();
 			primaryStage.show();
