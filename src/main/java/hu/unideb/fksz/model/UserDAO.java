@@ -92,6 +92,12 @@ public class UserDAO {
 		return false;
 	}
 
+	public static void registerUser(User user) {
+		entityManager.getTransaction().begin();
+		entityManager.persist(user);
+		entityManager.getTransaction().commit();
+	}
+
 	public static void removeUser(User user) {
 		//TODO SELECT USER
 		entityManager.getTransaction().begin();
