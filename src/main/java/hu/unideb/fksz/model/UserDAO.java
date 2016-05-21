@@ -92,20 +92,6 @@ public class UserDAO {
 		return false;
 	}
 
-	public static void registerUser(User user) {
-		entityManager.getTransaction().begin();
-		if (!entityManager.contains(user)) {
-			if (user.getRole().equals("admin")) {
-				TrafficCounterLogger.warnMessage("Can't register an admin!");
-			} else {
-				entityManager.persist(user);
-			}
-		} else {
-			TrafficCounterLogger.warnMessage("User already registered!");
-		}
-		entityManager.getTransaction().commit();
-	}
-
 	public static void removeUser(User user) {
 		//TODO SELECT USER
 		entityManager.getTransaction().begin();
