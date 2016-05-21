@@ -62,6 +62,7 @@ public class LogInController implements Initializable {
 	}
 	@FXML
 	private void logInWindowBackButtonClicked() {
+		getTrafficCounterController().resetTitle();
 		getTrafficCounterController().getTrafficCounterStage().setScene(
 				getTrafficCounterController().getTrafficCounterScene());
 		getTrafficCounterController().getTrafficCounterStage().show();

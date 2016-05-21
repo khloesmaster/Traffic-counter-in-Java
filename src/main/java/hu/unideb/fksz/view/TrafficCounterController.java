@@ -273,7 +273,12 @@ public class TrafficCounterController implements Initializable {
 	}
 
 	public void resetTitle() {
-		setTitle("Traffic counter - " + loggedUser.getName() + "-" + loggedUser.getRole());
+		if (loggedUser == null) {
+			setTitle("Traffic counter - No user");
+		} else if (loggedUser.getName() == null) {
+			setTitle("Traffic counter - No user");
+		} else
+			setTitle("Traffic counter - " + loggedUser.getName() + "-" + loggedUser.getRole());
 	}
 
 	@FXML

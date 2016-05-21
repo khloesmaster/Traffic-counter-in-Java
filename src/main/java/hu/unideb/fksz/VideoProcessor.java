@@ -395,6 +395,7 @@ public class VideoProcessor
 			if (!tmp.empty())
 			{
 				frame = tmp.clone();
+				tmp.release();
 				if (frameCounter < (getFrameCount()/2) -1 )
 				{
 					frameCounter++;
@@ -404,7 +405,6 @@ public class VideoProcessor
 					}
 
 					processFrame(getFrame());
-					tmp.release();
 				}
 				else
 				{
@@ -449,7 +449,9 @@ public class VideoProcessor
 			logger.error(e.getMessage());
 		}
 		fxImage = new Image( new ByteArrayInputStream(buffer.toArray()));
-		frameToConvert.release(); /////
+		if (!frameToConvert.empty()) {
+			frameToConvert.release(); /////
+		}
 
 		return fxImage;
 	}

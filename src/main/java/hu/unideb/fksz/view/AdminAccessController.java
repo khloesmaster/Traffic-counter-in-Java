@@ -181,7 +181,7 @@ public class AdminAccessController implements Initializable {
 		registerUserMenuItem.setOnAction(action -> {
 			onNewUserMenuItemClicked();
 		});
-		usersListContextMenu.getItems().addAll(deleteUserMenuItem, registerUserMenuItem);
+		usersListContextMenu.getItems().addAll(registerUserMenuItem);
 		adminAccessWindowListView.setContextMenu(usersListContextMenu);
 	}
 

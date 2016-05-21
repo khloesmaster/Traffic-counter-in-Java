@@ -11,7 +11,7 @@
       <TextField fx:id="logInWindowUserNameTextField" layoutX="140.0" layoutY="64.0" />
       <Label layoutX="52.0" layoutY="69.0" text="Username" />
       <Label layoutX="55.0" layoutY="100.0" text="Password" />
-      <Button fx:id="logInWindowLogInButton" layoutX="197.0" layoutY="160.0" mnemonicParsing="false" onAction="#logInButtonClicked" text="Log in" />
+      <Button fx:id="logInWindowLogInButton" layoutX="197.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#logInButtonClicked" text="Log in" />
       <CheckBox fx:id="logInWindowAdminCheckBox" layoutX="140.0" layoutY="131.0" mnemonicParsing="false" text="Admin" />
       <Button fx:id="logInWindowBackButton" layoutX="360.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#logInWindowBackButtonClicked" text="Back" />
       <Label fx:id="wrongPasswordLabel" layoutX="140.0" layoutY="40.0" text="Label" />

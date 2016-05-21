@@ -27,8 +27,6 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import hu.unideb.fksz.TrafficCounterLogger;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
