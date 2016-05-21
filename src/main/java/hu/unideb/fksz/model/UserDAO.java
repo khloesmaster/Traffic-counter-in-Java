@@ -93,9 +93,14 @@ public class UserDAO {
 	}
 
 	public static void registerUser(User user) {
-		entityManager.getTransaction().begin();
-		entityManager.persist(user);
-		entityManager.getTransaction().commit();
+		try {
+			entityManager.getTransaction().begin();
+			entityManager.persist(user);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			TrafficCounterLogger.errorMessage(e.getMessage());
+			entityManager.getTransaction().rollback();
+		}
 	}
 
 	public static void removeUser(User user) {
