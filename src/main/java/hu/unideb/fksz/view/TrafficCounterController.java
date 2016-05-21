@@ -293,6 +293,7 @@ public class TrafficCounterController implements Initializable {
 		trafficCounterWindowTrafficCountLabel.setVisible(false);
 		logOutButton.setVisible(false);
 		commitResultsButton.setVisible(false);
+		setTrafficCount(0);
 	}
 
 	public void showControls() {
@@ -301,6 +302,7 @@ public class TrafficCounterController implements Initializable {
 		trafficCounterWindowTrafficCountLabel.setVisible(true);
 		logOutButton.setVisible(true);
 		commitResultsButton.setVisible(true);
+		setTrafficCount(0);
 	}
 
 	public User getLoggedUser() {
@@ -542,6 +544,7 @@ public class TrafficCounterController implements Initializable {
 
 				videoProcessor.setDetectedCarsCount(0);
 				setTrafficCount(0);
+				trafficCounterWindowTrafficCountLabel.setText("Traffic count: 0");
 				startProcessing();
 			} else {
 				TrafficCounterLogger.errorMessage("Failed to load "
