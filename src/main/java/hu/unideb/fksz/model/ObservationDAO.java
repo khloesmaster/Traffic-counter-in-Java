@@ -50,16 +50,6 @@ public class ObservationDAO {
 		entityManager.getTransaction().commit();
 	}
 
-	public static void removeObservation(Observation observation) {
-		entityManager.getTransaction().begin();
-		if (entityManager.contains(observation)) {
-			entityManager.remove(observation);
-		} else {
-			TrafficCounterLogger.warnMessage("Can't remove nonexistent observation!");
-		}
-		entityManager.getTransaction().commit();
-	}
-
 	public static void close() {
 		entityManager.close();
 		entityManagerFactory.close();
