@@ -11,7 +11,7 @@
 				value="jdbc:oracle:thin:@db.inf.unideb.hu:1521:ora11g" />
 			<property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="hibernate.connection.username" value="H_BH6N4U" />
-			<property name="hibernate.connection.password" value="d12p43s5" />
+			<property name="hibernate.connection.password" value="" />
 		</properties>
 	</persistence-unit>
 </persistence>
