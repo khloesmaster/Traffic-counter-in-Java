@@ -79,6 +79,7 @@ public class LogInController implements Initializable {
 		}
 		if (UserDAO.logInUser(user)) {
 			getTrafficCounterController().setLoggedUser(user);
+			getTrafficCounterController().resetResults();;
 			getTrafficCounterController().getTrafficCounterStage().setScene(
 					getTrafficCounterController().getTrafficCounterScene());
 			getTrafficCounterController().getTrafficCounterStage().show();

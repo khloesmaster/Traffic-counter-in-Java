@@ -221,6 +221,7 @@ public class VideoProcessor
 		minutes%= 60;
 		seconds%= 60;
 
+
 		return  (hours > 9 ? hours : "0" + hours)      + ":" +
 				(minutes > 9 ? minutes : "0"+ minutes) + ":" +
 				(seconds > 9 ? seconds : "0"+ seconds);
@@ -264,6 +265,10 @@ public class VideoProcessor
 			Imgproc.threshold(differenceOfImages, thresholdImage, 25, 255, Imgproc.THRESH_BINARY);
 			Imgproc.blur(thresholdImage, thresholdImage, new Size(12, 12));
 			Imgproc.threshold(thresholdImage, thresholdImage, 20, 255, Imgproc.THRESH_BINARY);
+			/////
+			for(int i = 0; i < contours.size(); ++i) {
+				contours.get(i).release();
+			}
 			contours.clear();
 
 			/**
@@ -272,6 +277,9 @@ public class VideoProcessor
 			Imgproc.line(firstFrame, controlPoints.get(6), controlPoints.get(7), new Scalar(255,0,0), Imgproc.LINE_4);
 			Imgproc.findContours(thresholdImage, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
+			for(int i = 0; i < hullPoints.size(); ++i) {
+				hullPoints.get(i).release();
+			}
 			hullPoints.clear();
 
 			for (int i = 0; i < contours.size(); i++)
@@ -297,7 +305,12 @@ public class VideoProcessor
 
 				}
 			}
-
+			secondFrame.release();
+			hierarchy.release();
+			secondGrayImage.release();
+			firstGrayImage.release();
+			thresholdImage.release();
+			differenceOfImages.release();
 		}
 		catch(Exception e)
 		{
@@ -377,9 +390,11 @@ public class VideoProcessor
 	{
 		do
 		{
-			video.read(this.frame);
-			if (!this.frame.empty())
+			Mat tmp = new Mat();
+			video.read(tmp);
+			if (!tmp.empty())
 			{
+				frame = tmp.clone();
 				if (frameCounter < (getFrameCount()/2) -1 )
 				{
 					frameCounter++;
@@ -387,7 +402,9 @@ public class VideoProcessor
 					{
 						carsPerMinute = getDetectedCarsCount() / getMinutes();
 					}
+
 					processFrame(getFrame());
+					tmp.release();
 				}
 				else
 				{
@@ -401,7 +418,11 @@ public class VideoProcessor
 			else
 			{
 				logger.warn("Empty image!");
+				frameCounter = 0;
+				finished = true;
 
+				logger.trace("Restarting..");
+				setFramePos(1);
 			}
 		} while (frameCounter > (getFrameCount()/2) -2);
 	}
@@ -428,6 +449,8 @@ public class VideoProcessor
 			logger.error(e.getMessage());
 		}
 		fxImage = new Image( new ByteArrayInputStream(buffer.toArray()));
+		frameToConvert.release(); /////
+
 		return fxImage;
 	}
 

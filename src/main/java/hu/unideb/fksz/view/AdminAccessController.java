@@ -1,5 +1,7 @@
 package hu.unideb.fksz.view;
 
+import java.io.IOException;
+
 /*
  * #%L
  * Traffic-counter
@@ -27,6 +29,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import hu.unideb.fksz.TrafficCounterLogger;
 import hu.unideb.fksz.model.Observation;
 import hu.unideb.fksz.model.ObservationDAO;
 import hu.unideb.fksz.model.User;
@@ -34,7 +37,10 @@ import hu.unideb.fksz.model.UserDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
@@ -43,6 +49,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 public class AdminAccessController implements Initializable {
 
@@ -66,6 +73,16 @@ public class AdminAccessController implements Initializable {
 	private Button adminAccessWindowBackButton;
 	ObservableList<Observation> tableData = FXCollections.observableArrayList();
 	private TrafficCounterController trafficCounterController;
+	private Scene newUserScene;
+	private boolean firstRegister = false;
+
+	public Scene getNewUserScene() {
+		return newUserScene;
+	}
+
+	public void setNewUserScene(Scene newUserScene) {
+		this.newUserScene = newUserScene;
+	}
 
 	public TrafficCounterController getTrafficCounterController() {
 		return trafficCounterController;
@@ -102,8 +119,34 @@ public class AdminAccessController implements Initializable {
 
 	}
 
+	private void onNewUserMenuItemClicked() {
+		if (!firstRegister) {
+			try {
+				firstRegister = true;
+				Stage stage;
+				Parent root;
+				stage = (Stage) adminAccessWindowTableView.getScene().getWindow();
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NewUserWindow.fxml"));
+				root = loader.load();
+				Scene scene = new Scene(root);
+				stage.setTitle("New user");
+				stage.setScene(scene);
+				loader.<NewUserController> getController().setAdminAccessController(this);
+				setNewUserScene(scene);
+				stage.show();
+			} catch (IOException e) {
+				TrafficCounterLogger.errorMessage(e.toString());
+			}
+		} else {
+			getTrafficCounterController().getTrafficCounterStage().setScene(getNewUserScene());
+			getTrafficCounterController().getTrafficCounterStage().setTitle("New user");
+			getTrafficCounterController().getTrafficCounterStage().show();
+		}
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		System.out.println("initializing..");
 		adminAccessDateColumn.setCellValueFactory(new PropertyValueFactory<Observation, Timestamp>("observationDate"));
 		adminAccessObservationIdColumn
 				.setCellValueFactory(new PropertyValueFactory<Observation, Integer>("observationId"));
@@ -135,7 +178,9 @@ public class AdminAccessController implements Initializable {
 		});
 		MenuItem registerUserMenuItem = new MenuItem();
 		registerUserMenuItem.setText("New user");
-
+		registerUserMenuItem.setOnAction(action -> {
+			onNewUserMenuItemClicked();
+		});
 		usersListContextMenu.getItems().addAll(deleteUserMenuItem, registerUserMenuItem);
 		adminAccessWindowListView.setContextMenu(usersListContextMenu);
 	}

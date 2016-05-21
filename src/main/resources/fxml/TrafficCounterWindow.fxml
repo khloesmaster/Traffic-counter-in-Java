@@ -21,7 +21,7 @@
       <Label layoutX="781.0" layoutY="465.0" text="Results" />
       <Button fx:id="logInButton" layoutX="707.0" layoutY="322.0" mnemonicParsing="false" onMouseClicked="#logInButtonClicked" prefHeight="25.0" prefWidth="84.0" text="Log in" />
       <Button fx:id="observationsButton" layoutX="835.0" layoutY="382.0" mnemonicParsing="false" onMouseClicked="#observationsButtonClicked" prefHeight="25.0" prefWidth="104.0" text="Observations" />
-      <Label fx:id="trafficCounterWindowTrafficCountLabel" layoutX="671.0" layoutY="385.0" text="Traffic count: " />
+      <Label fx:id="trafficCounterWindowTrafficCountLabel" layoutX="671.0" layoutY="385.0" text="Traffic count: 0" />
       <Button fx:id="increaseTrafficCountButton" layoutX="802.0" layoutY="382.0" mnemonicParsing="false" onAction="#increaseTrafficCountButtonOnAction" prefHeight="25.0" prefWidth="30.0" text="+" />
       <Button fx:id="logOutButton" layoutX="827.0" layoutY="322.0" mnemonicParsing="false" onMouseClicked="#logOutButtonClicked" prefHeight="25.0" prefWidth="84.0" text="Log out" />
       <Button fx:id="commitResultsButton" layoutX="802.0" layoutY="423.0" mnemonicParsing="false" onMouseClicked="#commitResultsButtonClicked" prefHeight="25.0" prefWidth="137.0" text="Commit results" />

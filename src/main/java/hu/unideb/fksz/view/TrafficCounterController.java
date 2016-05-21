@@ -127,12 +127,24 @@ public class TrafficCounterController implements Initializable {
 	@FXML
 	private Label trafficCounterWindowTrafficCountLabel;
 	private int trafficCount;
-	private boolean firstLogin;
-	private boolean firstObservation;
+	private boolean firstLogin = false;
+	private boolean firstAdminAccess = false;
+	private boolean firstMonitorAccess = false;
+
 	private Scene logInScene;
 	private Scene trafficCounterScene;
-	private Scene observationsScene;
+	private Scene adminAccessScene;
+	private Scene monitorAccessScene;
+	private Scene logOutScene;
 	private Stage trafficCounterStage;
+
+	public Scene getLogOutScene() {
+		return logOutScene;
+	}
+
+	public void setLogOutScene(Scene logOutScene) {
+		this.logOutScene = logOutScene;
+	}
 
 	public Scene getTrafficCounterScene() {
 		return trafficCounterScene;
@@ -150,12 +162,20 @@ public class TrafficCounterController implements Initializable {
 		this.logInScene = logInScene;
 	}
 
-	public Scene getObservationsScene() {
-		return observationsScene;
+	public Scene getAdminAccessScene() {
+		return adminAccessScene;
 	}
 
-	public void setObservationsScene(Scene observationsScene) {
-		this.observationsScene = observationsScene;
+	public void setAdminAccessScene(Scene adminAccessScene) {
+		this.adminAccessScene = adminAccessScene;
+	}
+
+	public Scene getMonitorAccessScene() {
+		return monitorAccessScene;
+	}
+
+	public void setMonitorAccessScene(Scene monitorAccessScene) {
+		this.monitorAccessScene = monitorAccessScene;
 	}
 
 	public Stage getTrafficCounterStage() {
@@ -168,11 +188,36 @@ public class TrafficCounterController implements Initializable {
 
 	@FXML
 	private void commitResultsButtonClicked() {
-		commitResults();
+		if (!userObservations.isEmpty()) {
+			Alert commitConfirmation = new Alert(AlertType.CONFIRMATION);
+			commitConfirmation.setTitle("Commit confirmation");
+			commitConfirmation.setHeaderText("Commit your results");
+			commitConfirmation.setContentText("Are you sure you want to commit your results?");
+
+			ButtonType noButton = new ButtonType("No", ButtonData.NO);
+			ButtonType yesButton = new ButtonType("Yes", ButtonData.YES);
+
+			commitConfirmation.getButtonTypes().setAll(yesButton, noButton);
+			Optional<ButtonType> dialogResult = commitConfirmation.showAndWait();
+
+			if (dialogResult.get() == yesButton) {
+				commitResults();
+				TrafficCounterLogger.infoMessage("Committing results of " + getLoggedUser().getName());
+			} else if (dialogResult.get() == noButton) {
+				TrafficCounterLogger.infoMessage("Committing canceled");
+			}
+		} else {
+			Alert nothingToCommitInfo = new Alert(AlertType.INFORMATION);
+			nothingToCommitInfo.setTitle("Nothing to commit");
+			nothingToCommitInfo.setHeaderText("You have no results to commit!");
+			nothingToCommitInfo.setContentText("Try again when you'll have new observations!");
+			nothingToCommitInfo.showAndWait();
+		}
 	}
 
 	@FXML
 	private void logOutButtonClicked() {
+
 		Alert logOutConfirmation = new Alert(AlertType.CONFIRMATION);
 		logOutConfirmation.setTitle("Log out confirmation");
 		logOutConfirmation.setHeaderText("Any uncommitted result will be lost if you log out");
@@ -181,19 +226,19 @@ public class TrafficCounterController implements Initializable {
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		ButtonType logOutButton = new ButtonType("Log out");
 		ButtonType commitAndLogOutButton = new ButtonType("Commit");
-
-		logOutConfirmation.getButtonTypes().setAll(logOutButton, commitAndLogOutButton, cancelButton);
+		if (!userObservations.isEmpty()) {
+			logOutConfirmation.getButtonTypes().setAll(logOutButton, commitAndLogOutButton, cancelButton);
+		} else {
+			logOutConfirmation.getButtonTypes().setAll(logOutButton, cancelButton);
+		}
 		Optional<ButtonType> dialogResult = logOutConfirmation.showAndWait();
 
 		if (dialogResult.get() == logOutButton) {
-			getTrafficCounterStage().setScene(getLogInScene());
 			onlogOutConfirmationDialogLogOutResult();
-			getTrafficCounterStage().setScene(getTrafficCounterScene());
 			TrafficCounterLogger.infoMessage("Logging out..");
-			getTrafficCounterStage().show();
 		} else if (dialogResult.get() == commitAndLogOutButton) {
-			onlogOutConfirmationDialogLogOutResult();
 			commitResults();
+			onlogOutConfirmationDialogLogOutResult();
 			TrafficCounterLogger.infoMessage("Committing and logging out..");
 		}
 	}
@@ -206,16 +251,25 @@ public class TrafficCounterController implements Initializable {
 		this.root = root;
 	}
 
-	private void onlogOutConfirmationDialogLogOutResult() {
-		hideControls();
+	public void onlogOutConfirmationDialogLogOutResult() {
 		setLoggedUser(new User());
+		results = new ArrayList<String>();
+		listViewForResults.setItems(FXCollections.observableList(results));
 		setTitle("Traffic counter - No user");
+		hideControls();
 	}
 
-	private void commitResults() {
+	public void resetResults() {
+		results = new ArrayList<String>();
+		listViewForResults.setItems(FXCollections.observableList(results));
+	}
+
+	public void commitResults() {
 		for (Observation o : userObservations) {
 			ObservationDAO.insertObservation(o);
 		}
+		userObservations = new ArrayList<Observation>();
+		resetResults();
 	}
 
 	public void resetTitle() {
@@ -287,40 +341,53 @@ public class TrafficCounterController implements Initializable {
 			getTrafficCounterStage().setTitle("Log in");
 			getTrafficCounterStage().show();
 		}
+		System.gc();
 	}
 
 	@FXML
 	private void observationsButtonClicked() {
-		if (!firstObservation) {
+		if (loggedUser.getName() != null) {
 			try {
-				firstObservation = true;
 				Stage stage;
 				Parent root;
 				Scene scene = null;
 				FXMLLoader loader;
 				stage = (Stage) logInButton.getScene().getWindow();
 				if (getLoggedUser().getRole().equals(UserDAO.ADMIN_ROLE)) {
-					loader = new FXMLLoader(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
-					root = loader.load();
-					scene = new Scene(root);
-					loader.<AdminAccessController> getController().populateUserList();
-					loader.<AdminAccessController> getController().setTrafficCounterController(this);
+					if (!firstAdminAccess) {
+						firstAdminAccess = true;
+						loader = new FXMLLoader(getClass().getResource("/fxml/AdminAccessWindow.fxml"));
+						root = loader.load();
+						scene = new Scene(root);
+						loader.<AdminAccessController> getController().populateUserList();
+						loader.<AdminAccessController> getController().setTrafficCounterController(this);
+						setAdminAccessScene(scene);
+						stage.setScene(scene);
+						stage.show();
+					} else {
+						getTrafficCounterStage().setScene(getAdminAccessScene());
+						getTrafficCounterStage().show();
+					}
 				} else if (getLoggedUser().getRole().equals(UserDAO.MONITOR_ROLE)) {
-					loader = new FXMLLoader(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
-					root = loader.load();
-					scene = new Scene(root);
-					setTitle("Observations of " + loggedUser.getName());
-					loader.<MonitorAccessController> getController().populateObservationsTable(loggedUser);
-					loader.<MonitorAccessController> getController().setTrafficCounterController(this);
+					if (!firstMonitorAccess) {
+						firstAdminAccess = true;
+						loader = new FXMLLoader(getClass().getResource("/fxml/MonitorAccessWindow.fxml"));
+						root = loader.load();
+						scene = new Scene(root);
+						setTitle("Observations of " + loggedUser.getName());
+						loader.<MonitorAccessController> getController().populateObservationsTable(getLoggedUser());
+						loader.<MonitorAccessController> getController().setTrafficCounterController(this);
+						setMonitorAccessScene(scene);
+						stage.setScene(scene);
+						stage.show();
+					} else {
+						getTrafficCounterStage().setScene(getMonitorAccessScene());
+
+					}
 				}
-				stage.setScene(scene);
-				stage.show();
 			} catch (IOException e) {
 				TrafficCounterLogger.errorMessage(e.toString());
 			}
-		} else {
-			getTrafficCounterStage().setScene(getObservationsScene());
-			getTrafficCounterStage().show();
 		}
 	}
 
@@ -356,7 +423,6 @@ public class TrafficCounterController implements Initializable {
 	public int loadVideo(String filename) {
 		if (filename != null) {
 			if (videoProcessor.initVideo(filename) == 0) {
-
 				this.imageView.setImage(videoProcessor.getImageAtPos(1));
 
 				TrafficCounterLogger.infoMessage("Video " + filename + " loaded!");
@@ -448,6 +514,7 @@ public class TrafficCounterController implements Initializable {
 	 */
 	@FXML
 	private void startButtonClicked() {
+		System.gc();
 		if (otherFileSelected) {
 			pauseVideo = true;
 
@@ -594,29 +661,36 @@ public class TrafficCounterController implements Initializable {
 	 */
 	private void startProcessing() {
 		TimerTask frame_grabber = new TimerTask() {
+			Image tmp;
+
 			@Override
 			public void run() {
 				if (!pauseVideo) {
 					videoProcessor.processVideo();
 					videoProcessor.writeOnFrame("Detected cars count: " + videoProcessor.getDetectedCarsCount());
 
-					Image tmp = videoProcessor.convertCvMatToImage();
+					tmp = videoProcessor.convertCvMatToImage();
 					progressBar.setProgress(videoProcessor.getFramePos() / videoProcessor.getFrameCount());
 
 					if (videoProcessor.isFinished()) {
 						results.add(currentlyPlaying + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
 								+ videoProcessor.getCarsPerMinute() + " cars per minute.");
 						listViewForResults.setItems(FXCollections.observableList(results));
-						Observation currentObservation = new Observation();
-						currentObservation.setMonitor_id(getLoggedUser().getId());
-						currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
-						currentObservation.setTrafficCount(getTrafficCount());
-						currentObservation.setObservedVideoTitle(lastVideoName);
-						currentObservation.setComputerTrafficCount(videoProcessor.getDetectedCarsCount());
-						userObservations.add(currentObservation);
+						if (loggedUser != null) {
+							if (loggedUser.getName() != null) {
+								Observation currentObservation = new Observation();
+								currentObservation.setMonitor_id(getLoggedUser().getId());
+								currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
+								currentObservation.setTrafficCount(getTrafficCount());
+								currentObservation.setObservedVideoTitle(lastVideoName);
+								currentObservation.setComputerTrafficCount(videoProcessor.getDetectedCarsCount());
+								userObservations.add(currentObservation);
+							}
+						}
 						setTrafficCount(0);
 						videoProcessor.setDetectedCarsCount(0);
 						videoProcessor.setFinished(false);
+
 						pauseVideo = true;
 					} else {
 

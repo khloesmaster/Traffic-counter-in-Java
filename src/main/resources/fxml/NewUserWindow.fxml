@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="233.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.fksz.view.NewUserController">
+   <children>
+      <Button fx:id="newUserButton" layoutX="121.0" layoutY="194.0" mnemonicParsing="false" onMouseClicked="#newUserButtonClicked" text="New user" />
+      <Button fx:id="cancelButton" layoutX="219.0" layoutY="194.0" mnemonicParsing="false" onMouseClicked="#cancelButtonClicked" text="Cancel" />
+      <PasswordField fx:id="userPasswordAgainTextField" layoutX="121.0" layoutY="127.0" promptText="Enter password again" />
+      <PasswordField fx:id="userPasswordTextField" layoutX="121.0" layoutY="92.0" promptText="Enter password" />
+      <TextField fx:id="userNameTextField" layoutX="121.0" layoutY="52.0" promptText="Enter user name" />
+      <Label layoutX="8.0" layoutY="57.0" text="User name:" />
+      <Label layoutX="8.0" layoutY="97.0" text="Password:" />
+      <Label layoutX="8.0" layoutY="132.0" text="Password again:" />
+      <Label fx:id="userAlreadyRegisteredLabel" layoutX="115.0" layoutY="168.0" text="Label" />
+   </children>
+</AnchorPane>

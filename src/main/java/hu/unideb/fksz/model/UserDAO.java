@@ -73,10 +73,22 @@ public class UserDAO {
 				}
 			}
 		} catch (Exception e) {
-			entityManager.getTransaction().rollback();
 			TrafficCounterLogger.errorMessage(e.toString());
 		}
 
+		return false;
+	}
+
+	public static boolean userExists(User user) {
+		try {
+			TypedQuery<User> query = entityManager
+					.createQuery("Select u from User u where" + " user_name ='" + user.getName() + "'", User.class);
+			List<User> users = query.getResultList();
+			if (users.size() > 0) return true;
+
+		} catch (Exception e) {
+			TrafficCounterLogger.errorMessage(e.getMessage());
+		}
 		return false;
 	}
 
