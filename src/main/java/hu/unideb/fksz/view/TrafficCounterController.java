@@ -521,7 +521,6 @@ public class TrafficCounterController implements Initializable {
 	 */
 	@FXML
 	private void startButtonClicked() {
-		System.gc();
 		if (otherFileSelected) {
 			pauseVideo = true;
 
@@ -531,13 +530,19 @@ public class TrafficCounterController implements Initializable {
 				otherFileSelected = false;
 				startButton.setText("Pause");
 				timer.cancel();
-				Observation currentObservation = new Observation();
-				currentObservation.setMonitor_id(getLoggedUser().getId());
-				currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
-				currentObservation.setTrafficCount(getTrafficCount());
-				currentObservation.setObservedVideoTitle(lastVideoName);
-				currentObservation.setComputerTrafficCount(videoProcessor.getDetectedCarsCount());
-				userObservations.add(currentObservation);
+				if (loggedUser != null) {
+					if (loggedUser.getName() != null) {
+						Observation currentObservation = new Observation();
+						currentObservation.setMonitor_id(getLoggedUser().getId());
+						currentObservation.setObservationDate(Timestamp.valueOf(LocalDateTime.now()));
+						currentObservation.setTrafficCount(getTrafficCount());
+						currentObservation.setObservedVideoTitle(lastVideoName);
+						currentObservation.setComputerTrafficCount(videoProcessor.getDetectedCarsCount());
+						userObservations.add(currentObservation);
+						System.gc();
+					}
+				}
+
 				results.add(lastVideoName + ": " + videoProcessor.getDetectedCarsCount() + " cars detected, "
 						+ videoProcessor.getCarsPerMinute() + " cars per minute.");
 				listViewForResults.setItems(FXCollections.observableList(results));
